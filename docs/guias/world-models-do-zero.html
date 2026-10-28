@@ -1,0 +1,1397 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>World models do zero</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* Layout: coluna de leitura ~66ch; faixas comparativas de largura total; diagramas SVG inline e um canvas de rollout */
+:root{
+  --bg:#f3f6f7;
+  --surface:#ffffff;
+  --surface-2:#e8eef0;
+  --ink:#10171b;
+  --muted:#59696f;
+  --line:#d4dee2;
+  --real:#0b6f6a;
+  --dream:#ab6308;
+  --flag:#a1352a;
+  --font-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Literata",Georgia,"Times New Roman",serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1215;
+    --surface:#151d21;
+    --surface-2:#1d272c;
+    --ink:#e7eef0;
+    --muted:#93a5ac;
+    --line:#27333a;
+    --real:#45c0b2;
+    --dream:#e0a455;
+    --flag:#e5786c;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1215;
+  --surface:#151d21;
+  --surface-2:#1d272c;
+  --ink:#e7eef0;
+  --muted:#93a5ac;
+  --line:#27333a;
+  --real:#45c0b2;
+  --dream:#e0a455;
+  --flag:#e5786c;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.col{max-width:66ch}
+p{margin:0 0 1.05em}
+h1,h2,h3,h4{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.14;letter-spacing:-0.012em}
+h1{font-size:clamp(2.1rem,6vw,3.4rem);font-weight:700}
+h2{font-size:clamp(1.5rem,3.6vw,2.1rem);font-weight:600}
+h3{font-size:1.12rem;font-weight:600;letter-spacing:0}
+strong{font-weight:600}
+a{color:var(--real);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+code,.mono{font-family:var(--font-mono);font-size:0.88em}
+.eyebrow{
+  font-family:var(--font-display);
+  font-size:0.72rem;
+  font-weight:600;
+  letter-spacing:0.13em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* ---- hero ---- */
+header.hero{padding-block:clamp(40px,8vw,88px) clamp(28px,5vw,52px)}
+.hero .lede{font-size:clamp(1.08rem,2.2vw,1.28rem);color:var(--ink);max-width:60ch;margin-top:1.1rem}
+.hero .meta{margin-top:1.6rem;font-family:var(--font-mono);font-size:0.78rem;color:var(--muted);line-height:1.8}
+.heromark{margin-top:clamp(28px,5vw,44px)}
+.heromark svg{width:100%;height:auto;max-width:100%;display:block}
+
+/* ---- sections ---- */
+section{padding-block:clamp(32px,5vw,58px);border-top:1px solid var(--line)}
+.num{
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+  color:var(--muted);
+  display:block;
+  margin-bottom:0.5rem;
+}
+.sechead{margin-bottom:1.6rem}
+
+/* ---- analogy block ---- */
+.analogy{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-left:3px solid var(--dream);
+  border-radius:3px;
+  padding:1.1rem 1.25rem;
+  margin:1.4rem 0;
+  max-width:68ch;
+}
+.analogy .tag{
+  font-family:var(--font-display);
+  font-size:0.7rem;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--dream);
+  display:block;
+  margin-bottom:0.45rem;
+}
+.analogy p:last-child{margin-bottom:0}
+
+.flagbox{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-left:3px solid var(--flag);
+  border-radius:3px;
+  padding:1.1rem 1.25rem;
+  margin:1.4rem 0;
+  max-width:68ch;
+}
+.flagbox .tag{
+  font-family:var(--font-display);
+  font-size:0.7rem;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--flag);
+  display:block;
+  margin-bottom:0.45rem;
+}
+.flagbox p:last-child{margin-bottom:0}
+
+/* ---- equation ---- */
+.eq{
+  font-family:var(--font-mono);
+  font-size:0.92rem;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:3px;
+  padding:0.95rem 1.1rem;
+  margin:1.2rem 0;
+  overflow-x:auto;
+  line-height:1.9;
+}
+.eq .cite{display:block;font-size:0.76rem;color:var(--muted);margin-top:0.5rem}
+
+/* ---- tables ---- */
+.tablewrap{overflow-x:auto;margin:1.5rem 0;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:0.9rem;font-family:var(--font-body)}
+th,td{text-align:left;padding:0.68rem 0.85rem;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{
+  font-family:var(--font-display);
+  font-size:0.74rem;
+  font-weight:600;
+  letter-spacing:0.07em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:var(--surface-2);
+  white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td.num-cell{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+th[scope="row"]{font-weight:600;font-family:var(--font-display);font-size:0.9rem}
+
+/* ---- school cards ---- */
+.schools{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  border-radius:3px;
+  margin:1.6rem 0;
+}
+.school{background:var(--surface);padding:1.1rem 1.15rem;min-width:0}
+.school .role{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1.02rem;
+  margin-bottom:0.15rem;
+}
+.school .who{font-family:var(--font-mono);font-size:0.74rem;color:var(--muted);margin-bottom:0.7rem}
+.school .ans{font-size:0.92rem;margin:0}
+
+.switcher{display:flex;flex-wrap:wrap;gap:0.5rem;margin:1.5rem 0 0}
+.switcher button{
+  font-family:var(--font-display);
+  font-size:0.84rem;
+  font-weight:500;
+  color:var(--ink);
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:0.42rem 0.9rem;
+  cursor:pointer;
+  text-align:left;
+}
+.switcher button:hover{border-color:var(--muted)}
+.switcher button[aria-pressed="true"]{
+  background:var(--ink);
+  color:var(--bg);
+  border-color:var(--ink);
+}
+.switcher button:focus-visible{outline:2px solid var(--real);outline-offset:2px}
+
+/* ---- rollout lab ---- */
+.lab{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:3px;
+  padding:1.2rem;
+  margin:1.6rem 0;
+}
+.lab canvas{width:100%;height:auto;display:block;max-width:100%}
+.controls{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:1.1rem;
+  margin-top:1.1rem;
+}
+.ctrl{min-width:0}
+.ctrl label{
+  display:block;
+  font-family:var(--font-display);
+  font-size:0.8rem;
+  font-weight:500;
+  margin-bottom:0.4rem;
+}
+.ctrl label .v{font-family:var(--font-mono);color:var(--muted);font-weight:400}
+.ctrl input[type=range]{width:100%;accent-color:var(--dream)}
+.readout{
+  margin-top:1rem;
+  padding-top:0.9rem;
+  border-top:1px solid var(--line);
+  font-family:var(--font-mono);
+  font-size:0.8rem;
+  color:var(--muted);
+  line-height:1.8;
+}
+.readout b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:1.1rem;font-family:var(--font-mono);font-size:0.76rem;color:var(--muted);margin-bottom:0.9rem}
+.legend span{display:inline-flex;align-items:center;gap:0.4rem}
+.swatch{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+/* ---- misc ---- */
+.stat{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  border-radius:3px;
+  margin:1.5rem 0;
+}
+.stat > div{background:var(--surface);padding:0.95rem 1rem;min-width:0}
+.stat .big{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  font-weight:600;
+  font-variant-numeric:tabular-nums;
+  line-height:1.15;
+}
+.stat .cap{font-size:0.82rem;color:var(--muted);margin-top:0.25rem}
+ul.plain{margin:0 0 1.05em;padding-left:1.15rem}
+ul.plain li{margin-bottom:0.45rem}
+.diagram{margin:1.6rem 0;overflow-x:auto}
+.diagram svg{display:block;max-width:100%;height:auto;min-width:340px}
+.caption{font-size:0.82rem;color:var(--muted);margin-top:0.6rem;max-width:62ch}
+footer{padding-block:clamp(32px,5vw,56px);border-top:1px solid var(--line);color:var(--muted);font-size:0.88rem}
+footer a{color:var(--real)}
+.pair{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1.4rem;
+  margin:1.5rem 0;
+}
+.pair > div{min-width:0}
+.pair h3{margin-bottom:0.5rem}
+
+/* ---- legenda símbolo a símbolo ---- */
+.leg{display:grid;grid-template-columns:max-content 1fr;gap:0.35rem 1rem;margin:0.9rem 0 1.2rem;font-size:0.92rem;max-width:68ch}
+.leg dt{font-family:var(--font-mono);font-size:0.86em;color:var(--real);white-space:nowrap}
+.leg dd{margin:0;color:var(--ink)}
+.leg dd .mut{color:var(--muted)}
+.eq.lines{line-height:2.0}
+.eq .cm{color:var(--muted);font-size:0.86em}
+.eq .l{display:block}
+.en{font-style:italic;color:var(--muted);font-size:0.95em}
+.en::before{content:"(";}
+.en::after{content:")";}
+.calc{font-family:var(--font-mono);font-size:0.84rem;background:var(--surface-2);border-left:3px solid var(--real);border-radius:3px;padding:0.75rem 1rem;margin:1rem 0;line-height:1.9;max-width:68ch;overflow-x:auto}
+.calc b{color:var(--real);font-weight:500}
+pre.pc{font-family:var(--font-mono);font-size:0.8rem;line-height:1.65;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:0.9rem 1rem;margin:1.1rem 0;overflow-x:auto;max-width:68ch}
+pre.pc .k{color:var(--dream)}
+pre.pc .c{color:var(--muted)}
+.notebox{border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:3px;background:var(--surface);padding:0.9rem 1.15rem;margin:1.3rem 0;max-width:68ch;font-size:0.95rem}
+.notebox .tag{font-family:var(--font-display);font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.4rem}
+.notebox p:last-child{margin-bottom:0}
+details.check{border:1px solid var(--line);border-radius:3px;background:var(--surface);margin:0.8rem 0;max-width:68ch}
+details.check summary{cursor:pointer;padding:0.7rem 1rem 0.7rem 2rem;font-family:var(--font-display);font-weight:500;font-size:0.95rem;list-style:none;display:block;position:relative;line-height:1.45}
+details.check summary .mono{color:var(--muted);font-weight:400;font-size:0.78em;white-space:nowrap}
+details.check summary::-webkit-details-marker{display:none}
+details.check summary::before{content:"▸";color:var(--dream);position:absolute;left:1rem;top:0.7rem}
+details.check[open] summary::before{content:"▾"}
+details.check .a{padding:0 1rem 0.9rem;font-size:0.93rem;border-top:1px solid var(--line);padding-top:0.7rem;color:var(--ink)}
+details.check .a p:last-child{margin-bottom:0}
+.src{margin:0;padding-left:1.1rem;font-size:0.86rem;line-height:1.65}
+.src li{margin-bottom:0.3rem}
+.src .mono{font-size:0.82em}
+.badge{display:inline-block;font-family:var(--font-mono);font-size:0.68rem;border:1px solid var(--line);border-radius:3px;padding:0 0.35rem;color:var(--muted);vertical-align:middle;margin-left:0.3rem}
+.badge.v{color:var(--real);border-color:var(--real)}
+.badge.s{color:var(--dream);border-color:var(--dream)}
+.print-only{display:none}
+.timeline{margin:1.4rem 0;overflow-x:auto}
+.timeline svg{display:block;width:100%;height:auto;min-width:560px}
+
+@media print{
+  @page{size:A4;margin:16mm 15mm 18mm 15mm}
+  html,body{background:#fff!important}
+  :root{--bg:#ffffff}
+  section{break-before:page;page-break-before:always}
+  section.first,header.hero+section{break-before:auto;page-break-before:auto}
+  h1,h2,h3,.sechead{break-after:avoid-page;page-break-after:avoid}
+  p,li,figure,table,blockquote,canvas,svg,.analogy,.flagbox,.notebox,.eq,.calc,.stat,.pair,.diagram,.school,.schools,.tablewrap,.leg,pre.pc,details.check{break-inside:avoid-page;page-break-inside:avoid}
+  .lab,.controls,.switcher,.readout,.legend{display:none!important}
+  .print-only{display:block}
+  details.check{display:block}
+  details.check summary::before{content:""}
+  details.check .a{display:block}
+  details:not([open]) .a{display:block}
+  a{color:inherit;text-decoration:none}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:0.68em;color:#666;word-break:break-all}
+  .tablewrap{overflow:visible!important}
+  .tablewrap table{width:100%!important;table-layout:fixed;font-size:8.4pt}
+  .tablewrap th,.tablewrap td,.tablewrap code,.tablewrap .mono{white-space:normal!important;overflow-wrap:anywhere;padding:5px 6px!important}
+  .tablewrap code,.tablewrap .mono{font-size:7.2pt;letter-spacing:0!important}
+}
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <span class="eyebrow">Guia de estudo · companheiro do relatório</span>
+  <h1>World models do zero</h1>
+  <p class="lede">Um world model é um simulador do mundo que a máquina aprendeu sozinha, a partir de observações, e dentro do qual ela pode testar ações antes de executá-las. Este guia constrói essa ideia por analogias, exemplos numéricos e comparações lado a lado — e, em cada fórmula, mostra de onde sai cada número.</p>
+  <p class="meta">
+    Companheiro de <em>World models: fundamentos e pesquisa</em><br>
+    Leitura em 3 blocos: 01–07 para a intuição · 08–11 para avaliar o que você lê · 12–14 para consultar e praticar<br>As seções podem ser relidas fora de ordem, mas 03 → 06 → 08 formam uma sequência
+  </p>
+
+  <div class="heromark" aria-hidden="true">
+    <svg viewBox="0 0 900 190" role="presentation">
+      <defs>
+        <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="currentColor" stop-opacity="0.22"/>
+          <stop offset="1" stop-color="currentColor" stop-opacity="0.03"/>
+        </linearGradient>
+      </defs>
+      <g stroke-width="1" stroke="currentColor" opacity="0.14">
+        <line x1="0" y1="40" x2="900" y2="40"/>
+        <line x1="0" y1="95" x2="900" y2="95"/>
+        <line x1="0" y1="150" x2="900" y2="150"/>
+      </g>
+      <path d="M0,95 C120,55 180,135 300,95 C420,55 480,135 600,95 C720,55 780,135 900,95"
+            fill="none" stroke="var(--real)" stroke-width="2.4"/>
+      <path d="M0,95 C120,57 182,131 302,92 C428,48 498,146 626,78 C742,16 806,172 900,34"
+            fill="none" stroke="var(--dream)" stroke-width="2.4" stroke-dasharray="6 5"/>
+      <g font-family="var(--font-mono)" font-size="11" fill="currentColor" opacity="0.55">
+        <text x="4" y="178">t = 0</text>
+        <text x="848" y="178">t = H</text>
+      </g>
+      <circle cx="0" cy="95" r="4" fill="currentColor"/>
+    </svg>
+  </div>
+  <p class="caption">As duas curvas saem do mesmo ponto. A contínua é o que o mundo faz; a tracejada é o que o modelo imaginou que o mundo faria. A distância entre elas, crescendo com o horizonte, é o problema central do campo.</p>
+</header>
+
+<!-- ================= 00 ================= -->
+<section class="first">
+  <div class="sechead col">
+    <span class="num">00</span>
+    <h2>Antes de começar: o que você precisa saber, e a notação</h2>
+  </div>
+  <div class="col">
+    <p>Este guia assume pouco, mas não assume nada. Três ideias de aprendizado por reforço aparecem o tempo todo e nunca são definidas nos papers, porque lá todo mundo já sabe:</p>
+    <dl class="leg">
+      <dt>agente / ambiente</dt><dd>quem decide, e o resto do mundo. O agente observa, age, e o ambiente responde com uma nova observação e uma recompensa</dd>
+      <dt>política π(a | s)</dt><dd>a regra que escolhe a ação a partir do que o agente sabe. Lê-se "pi de a dado s". É o que o RL treina. Nos papers, <em>policy</em>; "amostrar a ~ π(· | s)" é sortear uma ação segundo ela</dd>
+      <dt>recompensa r<sub>t</sub></dt><dd>o ponto que o ambiente dá <em>agora</em>, por este passo</dd>
+      <dt>retorno / valor</dt><dd>a soma dos pontos <em>futuros</em>, com peso menor para o que está mais longe. "Valor de um estado" é o retorno que se espera a partir dele. <em>Return</em>, <em>value</em></dd>
+      <dt>RL livre de modelo</dt><dd>ajustar a política diretamente pela recompensa recebida, sem construir simulador. <em>Model-free</em>. É o que a maioria dos resultados famosos em jogos usou</dd>
+      <dt>autoencoder</dt><dd>uma rede que comprime a entrada num vetor pequeno e tenta reconstruí-la a partir dele. O vetor do meio é o <em>latente</em></dd>
+    </dl>
+    <p>O que você <strong>não</strong> precisa: saber derivar o ELBO, conhecer transformers por dentro, ter treinado RL. Para preencher as lacunas, dois recursos de uma hora cada: Sutton &amp; Barto, capítulos 1 e 3 (o que é um agente, uma política, um retorno), e a versão web interativa de Ha &amp; Schmidhuber em worldmodels.github.io, que é mais fácil que o PDF.</p>
+
+    <p><strong>Notação.</strong> Os símbolos abaixo são os mesmos em todas as seções; quando um paper usar outra letra, traduza para esta tabela.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Símbolo</th><th scope="col">O que é</th><th scope="col">No CarRacing de 2018</th></tr></thead>
+        <tbody>
+          <tr><td class="num-cell">o<sub>t</sub></td><td>observação: o que o sensor vê no instante t</td><td>imagem 64 × 64 × 3 = 12 288 números</td></tr>
+          <tr><td class="num-cell">s<sub>t</sub></td><td>o estado verdadeiro do mundo, em geral oculto</td><td>posição, velocidade, forma da pista</td></tr>
+          <tr><td class="num-cell">z<sub>t</sub></td><td>latente: o resumo comprimido de o<sub>t</sub></td><td>32 números</td></tr>
+          <tr><td class="num-cell">h<sub>t</sub></td><td>estado recorrente: a memória do que já foi visto</td><td>256 números (a LSTM)</td></tr>
+          <tr><td class="num-cell">a<sub>t</sub></td><td>ação</td><td>3 números: volante, acelerador, freio</td></tr>
+          <tr><td class="num-cell">r<sub>t</sub></td><td>recompensa</td><td>pontos por trecho de pista visitado</td></tr>
+          <tr><td class="num-cell">π(a | s)</td><td>política. Lê-se "pi de a dado s": a probabilidade de escolher a ação a sabendo que o estado é s. A barra é "dado que", nunca divisão; π é só o nome da função. Somando sobre todas as ações dá 1. Política determinística: a = π(s), sem barra</td><td>o controlador C — que na prática é π(a | z, h)</td></tr>
+          <tr><td class="num-cell">x̂, T̂, R̂</td><td>o acento marca o que é <strong>aprendido ou estimado</strong>, não dado</td><td>—</td></tr>
+          <tr><td class="num-cell">o<sub>≤t</sub>, a<sub>&lt;t</sub></td><td>"todas as observações até t", "todas as ações até t−1": o histórico</td><td>—</td></tr>
+          <tr><td class="num-cell">H</td><td>horizonte: quantos passos se imagina sem olhar o mundo</td><td>—</td></tr>
+          <tr><td class="num-cell">τ</td><td>temperatura: quanto ruído se injeta ao amostrar o próximo z</td><td>0,1 a 1,3 no VizDoom</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notebox"><span class="tag">s, o, h e z · quatro letras, três donos</span>
+      <p>A forma mais rápida de separá-las é perguntar <strong>de quem é cada uma</strong>. <strong>s<sub>t</sub> é do mundo</strong>: o conjunto mínimo de grandezas que determina o que vem a seguir. Existe mesmo que ninguém olhe, e você quase nunca tem acesso a ele. <strong>o<sub>t</sub> é do sensor</strong>: uma função do estado, com perda e ruído — o<sub>t</sub> = g(s<sub>t</sub>) + ruído. <strong>h<sub>t</sub> é do agente</strong>: um vetor que a rede recorrente calcula e guarda, resumindo tudo o que observou até agora. Não é nada do mundo; só existe dentro da LSTM. E <strong>z<sub>t</sub> é do agente também</strong>, mas resume <em>um</em> quadro, sem memória: z diz "o que estou vendo agora", h diz "o que isso significa dado o que vi antes".</p>
+      <p>Um exemplo que separa os quatro em uma linha. Uma bola rola. <strong>s</strong> = (posição, velocidade). <strong>o</strong> = a foto: mostra a posição e <em>não mostra a velocidade</em> — ela está em s, mas não está em o, e por isso um quadro só não basta para decidir. <strong>z</strong> = a posição lida da foto, em poucos números. <strong>h</strong> = depois de dois quadros, a rede pode guardar a diferença entre as duas posições: a velocidade reapareceu. Esse é o trabalho de h — reconstruir o que o sensor perdeu, e se comportar como s se comportaria.</p>
+      <p>Em termos da seção 02: s é Markov por definição; o não é (pôquer); h é treinado para ser aproximadamente Markov — um resumo suficiente do passado. E a armadilha de notação: na fórmula do ELBO da seção 05, o s<sub>t</sub> <strong>não é o estado do mundo</strong>. É o estado <em>do modelo</em>, o par (h<sub>t</sub>, z<sub>t</sub>) do RSSM — o que a rede construiu para substituir o s inacessível. Os papers reutilizam a letra; você não precisa reutilizar a confusão.</p></div>
+  </div>
+</section>
+
+<!-- ================= 01 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">01</span>
+    <h2>A ideia em uma frase, e por que você já usa uma</h2>
+  </div>
+  <div class="col">
+    <p>Quando você atravessa uma rua e vê um carro a cinquenta metros, não precisa ser atropelado para saber o que aconteceria. Você roda a cena para frente na cabeça, vê o resultado, e decide não atravessar. Você simulou. O carro real nunca encostou em você.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia mestra · o simulador de voo</span>
+      <p>Pilotos treinam pouso em tempestade num simulador, não num Boeing cheio de gente. O simulador é barato, repetível, e um erro ali custa zero. Mas ele só vale se for <em>fiel</em>: um simulador que não modela bem a tesoura de vento ensina o piloto a pousar errado com muita confiança.</p>
+      <p>Um world model é esse simulador, com uma diferença decisiva: ninguém o programou. Ele foi <strong>aprendido a partir de dados</strong>. Toda a dificuldade do campo vem dessa diferença — um simulador aprendido tem defeitos que ninguém escreveu e, portanto, ninguém documentou.</p>
+    </div>
+
+    <p>Formalmente, um agente com world model carrega duas funções aprendidas. Uma de <strong>transição</strong>, que responde "se o estado é este e eu fizer isto, qual é o próximo estado?". Outra de <strong>recompensa</strong>, que responde "isso foi bom <em>agora</em>?" — e, derivada dela, uma de <strong>valor</strong>, que responde "isso vai ser bom <em>no acumulado</em>?". Com as duas primeiras, o agente pode encadear perguntas hipotéticas sem tocar no mundo. (Recompensa é o ponto; valor é a soma dos pontos futuros. A diferença entre os dois é o que separa o MuZero do Dreamer, na seção 09.)</p>
+
+    <div class="eq lines">
+      <span class="l">ŝ<sub>t+1</sub> = T̂(s<sub>t</sub>, a<sub>t</sub>) &nbsp;<span class="cm">← transição: "se o estado é este e eu fizer isto, qual é o próximo?"</span></span>
+      <span class="l">r̂<sub>t</sub> &nbsp;&nbsp;= R̂(s<sub>t</sub>, a<sub>t</sub>) &nbsp;<span class="cm">← recompensa: "isso foi bom?"</span></span>
+      <span class="cite">O "modelo" mínimo do RL baseado em modelo <span class="en">model-based RL</span>. O acento circunflexo marca o que é aprendido, não dado. Os símbolos estão na seção 00.</span>
+    </div>
+
+    <p>A alternativa é aprender por tentativa e erro no mundo real, que é exatamente o que o RL livre de modelo <span class="en">model-free RL</span> faz: ajustar a política diretamente pela recompensa recebida, sem nunca construir um simulador. Funciona, e funciona muito bem em jogos, onde reiniciar é gratuito. O problema aparece quando cada tentativa custa um robô quebrado, um carro amassado, um lote de produção perdido ou um paciente.</p>
+
+    <div class="stat">
+      <div><div class="big">&lt; 62 h</div><div class="cap">de vídeo de robô não rotulado (dataset DROID) bastaram para o <strong>V-JEPA 2-AC</strong> planejar pegar-e-pousar <span class="en">pick-and-place</span> sem treino na tarefa <span class="en">zero-shot</span>, depois de pré-treinar em mais de 1 milhão de horas de vídeo passivo — uma razão de cerca de 16 000 : 1 <span class="mono">(arXiv:2506.09985)</span></div></div>
+      <div><div class="big">&gt; 99 %</div><div class="cap">é a lacuna de dados estimada pelo CAICT: existem 100 mil a 1 milhão de horas de dados reais de alta qualidade, e um modelo fundacional incorporado precisaria de ao menos 10 milhões <span class="mono">(CAICT, via Gasgoo Autonews, 2026)</span><span class="badge s">fonte secundária</span></div></div>
+    </div>
+
+    <p>É esse par de números que sustenta o argumento econômico do campo: vídeo passivo é abundante e barato; interação real é escassa e cara. Um world model é a tentativa de converter o primeiro no segundo.</p>
+    <div class="notebox"><span class="tag">De onde vem a ideia · 1943, 1990, 2018</span><p>O campo não nasceu em 2018. O psicólogo <strong>Kenneth Craik</strong> propôs em 1943 que a mente carrega um "modelo em pequena escala" da realidade e o usa para ensaiar ações antes de executá-las. Em 1990, <strong>Schmidhuber</strong> treinou redes recorrentes como modelos de mundo diferenciáveis, e <strong>Sutton</strong> publicou o <em>Dyna</em>: aprender um modelo do ambiente e usá-lo para gerar experiência imaginada com a qual a política é treinada — exatamente o laço da seção 06, 28 anos antes de ganhar o nome "sonhar". Ha &amp; Schmidhuber (2018) deram ao conjunto a forma moderna e o nome que colou.</p></div>
+    <p></p>
+  </div>
+</section>
+
+<!-- ================= 02 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">02</span>
+    <h2>Xadrez, pôquer e o estado que você não vê</h2>
+  </div>
+  <div class="col">
+    <p>Antes da anatomia, uma distinção que organiza tudo — e que explica por que a peça do meio da seção seguinte precisa ter memória.</p>
+
+    <div class="pair">
+      <div>
+        <h3>MDP · você vê o estado</h3>
+        <p>No xadrez, o tabuleiro está todo à mostra. O que você vê <em>é</em> o estado: basta ele para decidir, e o passado não acrescenta nada. Essa propriedade tem nome — <strong>Markov</strong> — e é o que permite escrever a decisão como função apenas do presente. O cenário todo se chama MDP <span class="en">Markov decision process</span>.</p>
+      </div>
+      <div>
+        <h3>POMDP · você vê um pedaço</h3>
+        <p>No pôquer, você vê suas cartas e as apostas, não a mão do adversário. O estado existe mas está oculto. Decidir bem exige manter uma <strong>crença</strong> sobre o que está escondido, atualizada a cada carta virada. É um POMDP <span class="en">partially observable MDP</span>.</p>
+      </div>
+    </div>
+
+    <p>Quase todo problema interessante é o segundo caso. Uma câmera num robô vê uma face do objeto, não sua massa; vê o pedestre até ele entrar atrás do ônibus. A formalização clássica é de Kaelbling, Littman &amp; Cassandra (1998), e o objeto central é o <em>belief state</em>: uma distribuição sobre estados possíveis, não um estado.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · o detetive</span>
+      <p>Um detetive não carrega "a verdade sobre o crime". Carrega um conjunto de hipóteses com pesos diferentes, e cada pista redistribui os pesos. Isso é um belief state. O estado recorrente oculto de uma RNN num world model é exatamente a tentativa de aprender esse acumulador de pistas em vez de programá-lo.</p>
+      <p><strong>A conta, uma vez, com números.</strong> Dois suspeitos, A e B, crença inicial 50 % / 50 %. Chega a pista: o culpado é canhoto. A é canhoto com probabilidade 0,9; B, com 0,2.</p>
+      <div class="calc">antes de normalizar: &nbsp; A = 0,50 × 0,9 = <b>0,45</b> &nbsp;·&nbsp; B = 0,50 × 0,2 = <b>0,10</b><br>soma = 0,55 &nbsp;→&nbsp; A = 0,45 ÷ 0,55 = <b>0,818</b> &nbsp;·&nbsp; B = 0,10 ÷ 0,55 = <b>0,182</b></div>
+      <p>Isso é uma atualização de crença — a regra de Bayes. A RNN de um world model tenta aprender a fazer essa conta sozinha, para milhares de "suspeitos" ao mesmo tempo, sem que ninguém escreva as probabilidades. É por isso que a peça <strong>M</strong> da próxima seção é recorrente: sem memória, não há como acumular pistas.</p>
+    </div>
+
+    <p>É aqui que o world model deixa de ser luxo e passa a ser necessidade estrutural. Sob observabilidade parcial, você <em>precisa</em> de algo que integre o histórico num resumo suficiente para decidir. Esse algo é um modelo de dinâmica, mesmo que você só queira agir.</p>
+  </div>
+</section>
+
+<!-- ================= 03 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">03</span>
+    <h2>Anatomia: três peças, e a menor é a que mais ensina</h2>
+  </div>
+  <div class="col">
+    <p>O artigo que deu nome ao campo moderno — Ha &amp; Schmidhuber, <em>World Models</em>, 2018, <span class="mono">arXiv:1803.10122</span> — montou o sistema em três peças com papéis bem separados. Vale decorar essa divisão, porque quase toda arquitetura posterior é uma variação dela.</p>
+  </div>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 262" role="img" aria-label="Diagrama das três peças: V comprime a observação em um vetor latente z; M, uma rede recorrente, prevê o próximo latente dado a ação e guarda a memória h; C escolhe a ação a partir de z e de h juntos.">
+      <g font-family="var(--font-mono)" font-size="11.5" fill="currentColor">
+        <!-- observation -->
+        <rect x="8" y="78" width="96" height="74" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+        <text x="56" y="110" text-anchor="middle" opacity="0.75">imagem</text>
+        <text x="56" y="128" text-anchor="middle" opacity="0.75">64×64×3</text>
+        <text x="56" y="168" text-anchor="middle" opacity="0.5">o_t</text>
+
+        <!-- V -->
+        <rect x="150" y="70" width="118" height="90" rx="3" fill="var(--surface)" stroke="var(--real)" stroke-width="1.8"/>
+        <text x="209" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="15" font-weight="600" fill="currentColor">V</text>
+        <text x="209" y="121" text-anchor="middle" opacity="0.72">VAE</text>
+        <text x="209" y="139" text-anchor="middle" opacity="0.72">4,3 M params</text>
+        <text x="209" y="183" text-anchor="middle" opacity="0.5">visão</text>
+
+        <!-- z -->
+        <text x="300" y="100" text-anchor="middle" opacity="0.75">z_t</text>
+        <text x="300" y="118" text-anchor="middle" opacity="0.55">32 núm.</text>
+
+        <!-- M -->
+        <rect x="340" y="70" width="144" height="90" rx="3" fill="var(--surface)" stroke="var(--dream)" stroke-width="1.8"/>
+        <text x="412" y="100" text-anchor="middle" font-family="var(--font-display)" font-size="15" font-weight="600" fill="currentColor">M</text>
+        <text x="412" y="121" text-anchor="middle" opacity="0.72">MDN-RNN</text>
+        <text x="412" y="139" text-anchor="middle" opacity="0.72">LSTM 256 · 0,42 M</text>
+        <text x="412" y="183" text-anchor="middle" opacity="0.5">imaginação</text>
+
+        <!-- h -->
+        <text x="512" y="108" text-anchor="middle" opacity="0.75">h_t</text>
+
+        <!-- C -->
+        <rect x="556" y="78" width="104" height="74" rx="3" fill="var(--surface)" stroke="currentColor" stroke-width="1.8"/>
+        <text x="608" y="106" text-anchor="middle" font-family="var(--font-display)" font-size="15" font-weight="600" fill="currentColor">C</text>
+        <text x="608" y="127" text-anchor="middle" opacity="0.72">867 params</text>
+        <text x="608" y="183" text-anchor="middle" opacity="0.5">decisão</text>
+
+        <!-- action -->
+        <text x="724" y="110" text-anchor="middle" opacity="0.75">a_t</text>
+
+        <rect x="770" y="78" width="100" height="74" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+        <text x="820" y="112" text-anchor="middle" opacity="0.75">mundo</text>
+        <text x="820" y="130" text-anchor="middle" opacity="0.75">(ou sonho)</text>
+      </g>
+      <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
+        <path d="M104,115 L146,115" marker-end="url(#ar)"/>
+        <path d="M268,115 L336,115" marker-end="url(#ar)"/>
+        <path d="M484,115 L552,115" marker-end="url(#ar)"/>
+        <path d="M300,126 L300,210 L608,210 L608,156" marker-end="url(#ar)" stroke-dasharray="3 3"/>
+        <path d="M660,115 L766,115" marker-end="url(#ar)"/>
+        <path d="M820,152 L820,236 L412,236 L412,162" marker-end="url(#ar)" stroke-dasharray="5 4"/>
+      </g>
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,1 L9,5 L0,9" fill="none" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+        </marker>
+      </defs>
+      <text x="616" y="252" font-family="var(--font-mono)" font-size="11" fill="currentColor" opacity="0.5">a ação alimenta a próxima previsão</text>
+      <text x="312" y="205" font-family="var(--font-mono)" font-size="10.5" fill="currentColor" opacity="0.5">z_t também entra em C</text>
+    </svg>
+  </div>
+  <p class="caption">Números de CarRacing no artigo original. A seta tracejada de baixo é o que torna o modelo um simulador e não um classificador: a saída volta como entrada. A outra tracejada mostra que C recebe <span class="mono">z_t</span> e <span class="mono">h_t</span> juntos — é daí que saem os 867 parâmetros, contados abaixo.</p>
+
+  <div class="col">
+    <div class="analogy">
+      <span class="tag">Analogia · olho, imaginação, músculo</span>
+      <p><strong>V</strong> é o olho: recebe 12.288 números (os pixels de uma imagem 64×64 RGB) e devolve 32. É um VAE <span class="en">variational autoencoder</span>: um compressor treinado para que a imagem possa ser reconstruída a partir dos 32 números. <strong>M</strong> é a imaginação: dado o resumo de agora e a ação pretendida, prevê o resumo de daqui a um instante — e guarda memória do que já viu, porque é uma LSTM, uma rede recorrente. <strong>C</strong> é o músculo: olha o resumo e a memória e aperta um botão.</p>
+      <p>O "MDN" em MDN-RNN importa para a seção 06: a rede <strong>não devolve um único próximo z</strong>, devolve uma <em>mistura de cinco gaussianas</em> sobre ele <span class="en">mixture density network</span>. Ou seja, M diz "o próximo resumo pode ser este, ou aquele, com estas chances" — e é essa distribuição que depois será amostrada com mais ou menos ruído.</p>
+    </div>
+
+    <p>Agora o detalhe que mais ensina sobre o campo inteiro. No artigo de 2018, V tem 4 348 547 parâmetros e M tem 422 368. O controlador C tem <strong>867</strong>. <strong>Cerca de cinco mil vezes menos</strong> que V. E o número não é mágico — dá para contar:</p>
+    <div class="calc">C é linear: &nbsp; a<sub>t</sub> = W · [z<sub>t</sub>, h<sub>t</sub>] + b<br>entrada: 32 (z) + 256 (h) = <b>288</b> números &nbsp;·&nbsp; saída: <b>3</b> ações (volante, acelerador, freio)<br>pesos: 288 × 3 = <b>864</b> &nbsp;·&nbsp; vieses: <b>3</b> &nbsp;·&nbsp; total: <b>867</b></div>
+    <p>"Controlador linear" significa literalmente uma multiplicação de matriz. Repare também que os números acima são de CarRacing; no VizDoom da seção 06, z tem 64 dimensões, a LSTM tem 512, e C recebe ainda o estado de célula da LSTM — 64 + 512 + 512 = 1 088 parâmetros.</p>
+
+    <div class="flagbox">
+      <span class="tag">O que esse contraste significa</span>
+      <p>Se a representação do mundo for boa o bastante, decidir fica trivial. Quase toda a inteligência está em <em>entender</em>, não em <em>escolher</em>. É por isso que o investimento do campo se concentra nos modelos de mundo, e não nas políticas — e também por que um controlador de 867 parâmetros conseguiu, em 2018, resolver o CarRacing com <span class="mono">906 ± 21</span> pontos, o primeiro método a passar do limiar de 900 daquele ambiente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">04</span>
+    <h2>Espaço latente: por que 32 números bastam</h2>
+  </div>
+  <div class="col">
+    <p>"Latente" <span class="en">latent</span> é a palavra que mais trava iniciantes, e a ideia é simples.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · narrar o jogo pelo rádio</span>
+      <p>A transmissão de TV de um jogo de futebol tem milhões de pixels por segundo. O locutor de rádio transmite o mesmo jogo com umas vinte palavras por minuto — e um ouvinte atento sabe o placar, quem está pressionando e se vale trocar de canal. O locutor descartou a cor da chuteira e manteve a posição da bola.</p>
+      <p>O espaço latente é a narração de rádio do mundo. Comprimir não é perder informação à toa; é perder <em>a informação irrelevante para decidir</em>.</p>
+    </div>
+
+    <p>Daí vem a pergunta que separa as escolas: irrelevante <em>para quê</em>? Se você treina o latente para <strong>reconstruir a imagem</strong>, ele vai gastar capacidade na textura do asfalto, porque textura é muitos pixels. Se treina para <strong>prever a recompensa</strong>, ele pode jogar fora a pista inteira e guardar só a distância até a parede. As duas escolhas produzem latentes muito diferentes a partir dos mesmos dados.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption class="caption" style="padding:0.8rem 0.85rem 0;text-align:left">O que o latente guarda depende do sinal de treino</caption>
+        <thead>
+          <tr><th scope="col">Sinal de treino</th><th scope="col">O latente tende a guardar</th><th scope="col">Falha típica</th><th scope="col">Exemplo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Reconstrução de pixels</th>
+            <td>O que é visualmente grande: fundo, textura, iluminação</td>
+            <td>Ignora o objeto pequeno e decisivo (a bola, o pedestre)</td>
+            <td class="num-cell">VAE do Ha &amp; Schmidhuber</td>
+          </tr>
+          <tr>
+            <th scope="row">Previsão de recompensa / valor</th>
+            <td>Só o que muda a decisão</td>
+            <td>Latente inútil fora da tarefa treinada</td>
+            <td class="num-cell">MuZero</td>
+          </tr>
+          <tr>
+            <th scope="row">Previsão no próprio espaço de embeddings</th>
+            <td>Estrutura abstrata, sem detalhe de aparência</td>
+            <td>Colapso: prever um vetor constante zera o erro</td>
+            <td class="num-cell">JEPA</td>
+          </tr>
+          <tr>
+            <th scope="row">Reconstrução + previsão + recompensa</th>
+            <td>Um compromisso entre os três</td>
+            <td>Pesos difíceis de equilibrar; muitos hiperparâmetros</td>
+            <td class="num-cell">Dreamer</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>O risco do colapso na terceira linha merece atenção, porque é um exemplo bonito de como uma função de perda pode ser trivialmente derrotada. Se você treina um modelo para prever o embedding futuro e mede o erro por distância, a solução ótima preguiçosa é mapear <em>tudo</em> para o mesmo vetor: erro zero, informação zero. É um aluno que responde "42" a toda questão de uma prova onde só se cobra consistência. As defesas conhecidas são regularizar variância e covariância das representações, como no VICReg <span class="mono">(arXiv:2105.04906)</span>, ou usar um "professor" com médias móveis <span class="en">EMA teacher</span> — uma cópia lenta do próprio modelo, que serve de alvo e não colapsa junto.</p>
+    <p><strong>A multa por responder "42", em números.</strong> O termo de variância do VICReg cobra, por dimensão, <span class="mono">max(0, 1 − desvio-padrão)</span> das representações no lote. Se o encoder devolve o mesmo vetor para toda imagem, o desvio-padrão é 0 em todas as dimensões e a multa vale <strong>1 em cada uma</strong> — com 256 dimensões, 256 de penalidade contra um erro de previsão de zero. O colapso deixa de ser a solução barata.</p>
+  </div>
+</section>
+
+<!-- ================= 05 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">05</span>
+    <h2>A função de perda, sem susto</h2>
+  </div>
+  <div class="col">
+    <p>A objetiva dos world models latentes assusta escrita, e é uma ideia só. Você quer um resumo do mundo que satisfaça duas exigências em tensão.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · o resumo do livro</span>
+      <p>Resuma um romance de 400 páginas. Duas notas são dadas. A primeira pergunta: a partir do seu resumo, dá para reconstruir a história? (Isso empurra o resumo a ficar longo e detalhado.) A segunda pergunta: seu resumo é econômico, parecido com o que se esperaria de qualquer romance? (Isso empurra a ficar curto e genérico.) A nota final é a soma. O resumo ótimo fica no meio.</p>
+      <p>A primeira nota é o <strong>termo de reconstrução</strong>. A segunda é a <strong>divergência KL</strong> contra um prior. A soma é o ELBO.</p>
+    </div>
+
+    <div class="eq lines">
+      <span class="l">maximizar &nbsp; Σ<sub>t</sub> &nbsp;ln p(o<sub>t</sub> | s<sub>t</sub>) <span class="cm">&nbsp;← reconstrução: "a partir do resumo, dá para redesenhar a imagem?"</span></span>
+      <span class="l">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;− Σ<sub>t</sub> &nbsp;KL( q(s<sub>t</sub> | o<sub>≤t</sub>, a<sub>&lt;t</sub>) <span class="cm">&nbsp;← o que eu infiro <strong>olhando</strong> a imagem de agora</span></span>
+      <span class="l">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;‖ p(s<sub>t</sub> | s<sub>t−1</sub>, a<sub>t−1</sub>) ) <span class="cm">&nbsp;← o que eu tinha previsto <strong>sem olhar</strong>, só pelo passo anterior</span></span>
+      <span class="cite">Forma do ELBO sequencial do PlaNet, arXiv:1811.04551, Eq. 3, com a esperança sobre q omitida para leitura. O relatório traz a versão exata verificada no PDF, marcada [V].</span>
+    </div>
+    <dl class="leg">
+      <dt>s<sub>t</sub></dt><dd>o estado do modelo no instante t <span class="mut">— no RSSM, leia como o par (h<sub>t</sub>, z<sub>t</sub>)</span></dd>
+      <dt>o<sub>t</sub></dt><dd>a observação: a imagem</dd>
+      <dt>o<sub>≤t</sub>, a<sub>&lt;t</sub></dt><dd>todas as observações até agora e todas as ações até a anterior: o histórico</dd>
+      <dt>q( · | o<sub>≤t</sub>, …)</dt><dd>o <strong>encoder</strong>, também chamado de posterior: a crença <em>depois</em> de ver a imagem</dd>
+      <dt>p( · | s<sub>t−1</sub>, a<sub>t−1</sub>)</dt><dd>o <strong>prior</strong>, o modelo de dinâmica: a crença <em>antes</em> de ver, só pelo passo anterior e pela ação</dd>
+      <dt>KL(q ‖ p)</dt><dd>quanto a observação <em>surpreendeu</em> a previsão, em nats</dd>
+      <dt>ln p(o<sub>t</sub> | s<sub>t</sub>)</dt><dd>quão provável a imagem real é, dado o resumo — alto se o decoder a reconstrói bem</dd>
+    </dl>
+    <p><strong>Ponte para o que você já conhece.</strong> Com um decoder gaussiano de variância fixa, <span class="mono">ln p(o | s) = −‖o − ô‖² / (2σ²) + constante</span>. Ou seja: <strong>o termo de reconstrução é um erro quadrático médio disfarçado</strong>. Essa linha sozinha desmistifica metade da fórmula — e é também a razão do borrão: minimizar erro quadrático entre dois futuros possíveis produz a média dos dois.</p>
+    <p><strong>Um KL calculado à mão.</strong> Quando encoder e prior são gaussianas de uma dimensão, a divergência tem forma fechada: <span class="mono">KL(N(μ₁,σ₁²) ‖ N(μ₂,σ₂²)) = ln(σ₂/σ₁) + (σ₁² + (μ₁−μ₂)²)/(2σ₂²) − ½</span>. Três casos dizem tudo:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">encoder q (olhou)</th><th scope="col">prior p (previu)</th><th scope="col">KL</th><th scope="col">leitura</th></tr></thead>
+        <tbody>
+          <tr><td class="num-cell">N(0, 1)</td><td class="num-cell">N(0, 1)</td><td class="num-cell">0</td><td>olhar não trouxe nada que a previsão já não soubesse</td></tr>
+          <tr><td class="num-cell">N(1, 1)</td><td class="num-cell">N(0, 1)</td><td class="num-cell">0,500 nat</td><td>a observação deslocou a crença em um desvio: o modelo errou a previsão</td></tr>
+          <tr><td class="num-cell">N(0, 0,5²)</td><td class="num-cell">N(0, 1)</td><td class="num-cell">0,318 nat</td><td>a observação reduziu a incerteza: o prior era vago demais</td></tr>
+          <tr><td class="num-cell">N(0, 2²)</td><td class="num-cell">N(0, 1)</td><td class="num-cell">0,807 nat</td><td>o encoder ficou mais incerto que o prior: a imagem confundiu em vez de informar</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Conferindo a segunda linha: ln(1/1) + (1 + 1)/2 − ½ = 0 + 1 − 0,5 = 0,5. O KL mede <strong>o quanto a previsão foi surpreendida pela observação</strong>, e treinar para minimizá-lo é ensinar o prior a não ser surpreendido — isto é, a prever.</p>
+    <p><strong>O que a fórmula não mostra:</strong> a recompensa. O PlaNet também reconstrói <span class="mono">r<sub>t</sub></span>, tratada como mais uma observação a ser prevista a partir de s<sub>t</sub>. Sem esse termo, o modelo saberia imaginar o futuro mas não saberia dizer se ele é bom.</p>
+
+    <p>Duas leituras do segundo termo ajudam. Como regularizador, ele impede o resumo de virar uma cópia disfarçada da imagem. Como <em>objetivo de dinâmica</em>, ele força o que você infere olhando (q) a coincidir com o que você previu sem olhar (p) — ou seja, é o termo que ensina o modelo a prever o futuro, não só a comprimir o presente. Se você removesse o KL e treinasse só com reconstrução, o latente viraria um compactador estático excelente, e o prior nunca aprenderia a prever nada.</p>
+
+    <p>Uma peça de engenharia que vale conhecer pelo nome é o <strong>RSSM</strong>, a espinha dorsal da linha PlaNet/Dreamer: o estado é partido em uma parte determinística e uma estocástica. A analogia é um trem com trilho e sorteio — o trilho (<span class="mono">h<sub>t</sub></span>, recorrente) garante que a informação do passado não se perca no ruído; o sorteio (<span class="mono">z<sub>t</sub></span>, amostrado) dá ao modelo capacidade de representar futuros genuinamente incertos. Modelar só o determinístico produz um simulador confiante e cego à incerteza; modelar só o estocástico esquece o passado.</p>
+
+    <p>Do DreamerV2 em diante o <span class="mono">z<sub>t</sub></span> passou a ser <em>categórico</em> em vez de gaussiano — o modelo escolhe entre opções discretas em vez de deslizar num contínuo. Vale pensar em substantivos contra termômetros: para "a porta está aberta ou fechada", categorias cabem melhor que um número real, e multimodalidade (dois futuros plausíveis e nada no meio) é representável sem a média sem sentido que uma gaussiana produziria.</p>
+    <p>"Categórico não é pouco expressivo?" O DreamerV2 usa <strong>32 variáveis com 32 classes cada</strong>. São 32 × 32 = 1 024 posições de um vetor one-hot — mas 32<sup>32</sup> = 2<sup>160</sup> ≈ 10<sup>48</sup> estados combinados possíveis. Não falta espaço; o que se perde é a noção de "perto" entre classes, e isso é deliberado.</p>
+  </div>
+</section>
+
+<!-- ================= 06 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">06</span>
+    <h2>Sonhar: o truque central e sua armadilha</h2>
+  </div>
+  <div class="col">
+    <p>Com um modelo de dinâmica treinado, abre-se a jogada que define o campo: treinar a política <strong>dentro do modelo</strong>. O agente nunca toca o ambiente durante o aprendizado da política. Ele gera trajetórias imaginadas e aprende nelas. Ha &amp; Schmidhuber chamaram isso de sonhar <span class="en">imagination, dreaming</span>, e mostraram um agente de VizDoom treinado inteiramente no sonho e depois transplantado para o jogo real.</p>
+    <p>O laço inteiro, com as três fases separadas — repare <strong>onde o mundo real entra e onde não entra</strong>:</p>
+<pre class="pc"><span class="k">repetir</span>:
+    <span class="c"># fase 1 — coletar no mundo real (caro)</span>
+    trajetórias ← rodar a política no ambiente por N passos
+    buffer ← buffer ∪ trajetórias
+
+    <span class="c"># fase 2 — treinar o modelo de mundo (encoder + dinâmica + recompensa)</span>
+    <span class="k">para cada</span> lote do buffer:
+        minimizar &nbsp;perda = reconstrução + KL + erro de recompensa      <span class="c"># a seção 05</span>
+
+    <span class="c"># fase 3 — treinar a política SÓ no sonho (barato)</span>
+    <span class="k">para cada</span> estado inicial amostrado do buffer:
+        imaginar H passos usando o modelo                        <span class="c"># ← nenhum contato com o ambiente</span>
+        atualizar política e crítico nas trajetórias imaginadas
+</pre>
+    <p>Duas coisas ficam visíveis. Os <em>rollouts curtos ancorados em estados reais</em> da seção 08 são uma escolha de <strong>H</strong> e do ponto de partida na fase 3. E o <em>model exploitation</em> abaixo acontece inteiramente na fase 3: a política é otimizada contra o modelo, e o modelo tem buracos.</p>
+    <p>Como o gradiente atravessa o sonho? Na fase 3, o Dreamer deriva o retorno imaginado em relação aos parâmetros da política <em>através do modelo</em>, passo a passo. Para latentes gaussianos isso usa o truque da reparametrização (amostrar ruído fixo e deslocá-lo, em vez de amostrar diretamente); para latentes categóricos, o estimador <em>straight-through</em>, que finge na volta que a amostragem foi contínua. Ha &amp; Schmidhuber, em 2018, nem precisaram disso: C tinha 867 parâmetros e foi otimizado por evolução (CMA-ES), sem gradiente nenhum.</p>
+
+    <p>A vantagem é enorme. Simular é ordens de magnitude mais barato que agir, e no sonho você pode reiniciar à vontade, paralelizar, e explorar o perigoso. A armadilha é igualmente enorme, e tem nome: <strong>model exploitation</strong>.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · o simulado que você mesmo escreveu</span>
+      <p>Estude para um concurso usando só provas que você mesmo inventou. Sua nota nelas vai a 100. Você não aprendeu o conteúdo — aprendeu a explorar as falhas do seu próprio gerador de provas. A política otimizada contra um modelo imperfeito faz exatamente isso: encontra o bug do simulador e mora nele.</p>
+    </div>
+
+    <p>O artigo de 2018 mediu isso de um jeito que convém guardar. Eles controlavam a aleatoriedade do sonho por uma temperatura <span class="mono">τ</span>, que escala a variância da mistura de gaussianas que M devolve: τ baixo torna o sonho quase determinístico; τ alto, caótico. Com o sonho muito determinístico, o agente ficou ótimo lá e inútil aqui.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption class="caption" style="padding:0.8rem 0.85rem 0;text-align:left">VizDoom (Take Cover): passos de sobrevivência no sonho e no jogo real, por temperatura. Tabela 2 de Ha &amp; Schmidhuber, 2018 <span class="mono">(arXiv:1803.10122)</span><span class="badge v">conferido</span>. Resolver = média acima de 750 em 100 episódios.</caption>
+        <thead>
+          <tr><th scope="col">Temperatura τ</th><th scope="col">No sonho</th><th scope="col">No jogo real</th><th scope="col">Leitura</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num-cell">0,10</td><td class="num-cell">2086 ± 140</td><td class="num-cell">193 ± 58</td><td>Sonho determinístico: o agente achou o bug do simulador. Pior que a política aleatória</td></tr>
+          <tr><td class="num-cell">0,50</td><td class="num-cell">2060 ± 277</td><td class="num-cell">196 ± 50</td><td>Idem — ainda pouco ruído</td></tr>
+          <tr><td class="num-cell">1,00</td><td class="num-cell">1145 ± 690</td><td class="num-cell">868 ± 511</td><td>Começa a transferir: já resolve a tarefa</td></tr>
+          <tr><td class="num-cell"><strong>1,15</strong></td><td class="num-cell">918 ± 546</td><td class="num-cell"><strong>1092 ± 556</strong></td><td>O melhor no jogo real — e pior no sonho que em τ baixo</td></tr>
+          <tr><td class="num-cell">1,30</td><td class="num-cell">732 ± 269</td><td class="num-cell">753 ± 139</td><td>Ruído demais: o sonho fica difícil demais para aprender nele</td></tr>
+          <tr><td>política aleatória</td><td class="num-cell">—</td><td class="num-cell">210 ± 108</td><td>a régua de baixo</td></tr>
+          <tr><td>líder do Gym na época</td><td class="num-cell">—</td><td class="num-cell">820 ± 58</td><td>a régua de cima</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flagbox">
+      <span class="tag">Guarde este par de números</span>
+      <p><strong>2086 no sonho, 193 na realidade.</strong> É o exemplo mais limpo que a literatura tem de desempenho dentro do modelo sendo <em>anticorrelacionado</em> com desempenho real — 193 é <em>pior</em> que os 210 de uma política aleatória. Qualquer proposta de pesquisa que avalie um world model apenas por métricas internas precisa explicar por que não está caindo nessa armadilha.</p>
+      <p>E note a cura, que é contraintuitiva e <strong>não é monotônica</strong>: <em>adicionar ruído</em> ao simulador melhorou a transferência até τ = 1,15, e piorou depois. Um simulador honestamente incerto ensina melhor que um falsamente preciso; um simulador caótico não ensina nada. A lição não é "mais ruído é melhor", é "a incerteza do sonho precisa parecer com a do mundo".</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">07</span>
+    <h2>Planejar em vez de sonhar: o modelo na hora de decidir</h2>
+  </div>
+  <div class="col">
+    <p>A seção anterior mostrou um uso do modelo: treinar uma política dentro dele, e depois agir com a política sem o modelo. Metade do campo faz o oposto — <strong>mantém o modelo ligado durante a decisão</strong> e, a cada passo, busca a melhor sequência de ações imaginando as consequências de várias <span class="en">planning, model-predictive control</span>. Sem essa distinção, a tabela das quatro escolas da seção 09 fica sem chão.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · o enxadrista e o motorista</span>
+      <p>O enxadrista pensa antes de cada lance: imagina três ou quatro jogadas à frente, para várias alternativas, e só então move a peça. O motorista experiente não pensa: o pé vai ao freio por reflexo. Os dois usaram um modelo do mundo — o enxadrista <em>agora</em>, na hora de decidir; o motorista <em>antes</em>, nas horas de treino que viraram reflexo. Planejar é o enxadrista. Sonhar e depois agir é o motorista.</p>
+    </div>
+
+    <p>O algoritmo de planejamento mais usado nessa linha é o <strong>CEM</strong> <span class="en">cross-entropy method</span>, e cabe em cinco linhas de português. É o que o PlaNet faz a cada passo:</p>
+    <pre class="pc"><span class="k">a cada passo do ambiente</span>:
+    sorteie 1000 sequências de 12 ações, de uma gaussiana inicial
+    rode cada uma <span class="c">dentro do modelo</span> e some as recompensas imaginadas
+    fique com as 100 melhores
+    ajuste a gaussiana (média e desvio) a essas 100
+    repita o sorteio 10 vezes
+    execute <span class="c">só a primeira ação</span> da melhor sequência; descarte o resto
+    no passo seguinte, observe o mundo e <span class="k">replaneje do zero</span></pre>
+    <p>Repare em duas coisas. Primeiro, "execute só a primeira ação e replaneje" é a correção de erro composto embutida no método: o plano nunca é seguido por mais de um passo antes de ser reancorado na observação real — a mesma ideia da seção seguinte, aplicada à decisão. Segundo, o custo: mil rollouts de doze passos <em>por decisão</em>. É por isso que, na tabela da seção 09, "cabe num notebook?" é "parcialmente" para o apostador — a busca é cara, e o LeWorldModel vende exatamente planejamento mais barato.</p>
+
+    <p>As variantes mudam a busca, não a ideia. O TD-MPC2 usa MPPI, um primo do CEM com pesos suaves. O MuZero usa <strong>busca em árvore</strong> (MCTS): em vez de sortear sequências inteiras, expande as ações mais promissoras um nível por vez, guiado por um valor aprendido. O V-JEPA 2-AC planeja minimizando uma energia no espaço de embeddings. Em todos, o modelo é consultado <em>na hora</em>, e a qualidade da decisão depende diretamente da qualidade do modelo no horizonte usado.</p>
+
+    <div class="flagbox">
+      <span class="tag">Sonhar ou planejar? O que cada um compra</span>
+      <p><strong>Sonhar</strong> (Dreamer): decisão instantânea depois de treinada; a política pode ser pequena; o preço é o <em>model exploitation</em> e uma política congelada na tarefa. <strong>Planejar</strong> (PlaNet, TD-MPC2, MuZero): adapta-se a objetivos novos sem retreinar e corrige o rumo a cada passo; o preço é compute em tempo de decisão e sensibilidade ao erro de horizonte curto. O Dreamer moderno faz os dois: treina a política no sonho e usa um crítico aprendido no lugar da busca.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 08 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">08</span>
+    <h2>Erro composto: por que o horizonte é inimigo</h2>
+  </div>
+  <div class="col">
+    <p>Um modelo com 99 % de acerto por passo não tem 99 % de acerto em cem passos: 0,99<sup>100</sup> ≈ <strong>0,37</strong>. Ele alimenta a própria saída como entrada <span class="en">autoregressive rollout</span>, e o erro não só acumula — pode se multiplicar, porque o modelo passa a operar sobre estados que nunca viu nos dados de treino.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · fotocópia de fotocópia</span>
+      <p>Tire uma cópia de um documento: quase idêntica. Copie a cópia. Depois a cópia da cópia. Na vigésima geração o texto é mancha. Nenhum passo individual foi ruim; a degradação é composta. Um rollout autoregressivo é exatamente uma pilha de fotocópias — e a distribuição dos estados visitados vai se afastando daquela em que o modelo foi treinado, o que piora cada passo seguinte.</p>
+    </div>
+
+    <p><strong>A fórmula que o erro composto merece.</strong> Chame de ε o erro que o modelo comete em um passo, e de L o fator pelo qual a dinâmica <em>amplifica</em> um desvio existente de um passo para o outro. Então o erro acumulado obedece a</p>
+    <div class="eq lines">
+      <span class="l">e<sub>t+1</sub> ≤ L · e<sub>t</sub> + ε <span class="cm">&nbsp;← o erro de ontem, amplificado, mais o erro novo de hoje</span></span>
+      <span class="l">e<sub>H</sub> ≤ ε · (L<sup>H</sup> − 1) / (L − 1) <span class="cm">&nbsp;← somando H passos (para L = 1, isso vira simplesmente ε · H)</span></span>
+    </div>
+    <dl class="leg">
+      <dt>ε</dt><dd>erro do modelo em um único passo, a partir de um estado correto</dd>
+      <dt>L</dt><dd>quanto a dinâmica estica um desvio por passo: &lt; 1 amortece (atrito, uma bola que para), = 1 preserva, &gt; 1 amplifica (um lápis equilibrado na ponta, o clima)</dd>
+      <dt>H</dt><dd>o horizonte: quantos passos seguidos você imagina sem olhar o mundo</dd>
+    </dl>
+    <div class="tablewrap">
+      <table>
+        <caption class="caption" style="padding:0.8rem 0.85rem 0;text-align:left">Mesmo ε = 0,01 e mesmo horizonte H = 50: o que muda é a dinâmica</caption>
+        <thead><tr><th scope="col">L</th><th scope="col">tipo de sistema</th><th scope="col">erro no fim (limite)</th><th scope="col">leitura</th></tr></thead>
+        <tbody>
+          <tr><td class="num-cell">0,9</td><td>dissipativo</td><td class="num-cell">≈ 0,10</td><td><strong>satura</strong> em ε/(1−L): não explode nunca</td></tr>
+          <tr><td class="num-cell">1,0</td><td>neutro</td><td class="num-cell">0,50</td><td>cresce <strong>linearmente</strong>, ε por passo</td></tr>
+          <tr><td class="num-cell">1,1</td><td>instável ou caótico</td><td class="num-cell">≈ 11,6</td><td><strong>explode</strong> exponencialmente — mil vezes o erro de um passo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Isso corrige uma frase que se lê por aí, inclusive numa versão anterior deste guia: "o erro composto cresce pior que linear". Cresce pior que linear <strong>quando a dinâmica amplifica desvios</strong>. Num sistema que amortece, o erro satura e o rollout longo é inofensivo. A pergunta certa diante de qualquer world model é, portanto, "qual é o L do ambiente que ele imita?" — e é exatamente isso que o fator L, abaixo, deixa você mudar.</p>
+
+    <p>Na versão interativa, mexa nos controles; no papel, os três painéis mostram os três regimes com os mesmos números da tabela. O erro por passo é pequeno e constante; o que acontece com ele depende de L — e do quanto você espera para reancorar no mundo real.</p>
+
+    <div class="lab">
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--dream)"></i> erro do rollout, passo a passo</span>
+        <span><i class="swatch" style="background:var(--real)"></i> limite da fórmula ε(L<sup>t</sup>−1)/(L−1)</span>
+        <span><i class="swatch" style="background:currentColor;opacity:.35"></i> reancoragem num estado real</span>
+      </div>
+      <canvas id="rolloutCanvas" width="880" height="320" aria-label="Gráfico do erro entre o rollout do modelo e a realidade ao longo de 50 passos, em escala logarítmica, para um fator de amplificação L ajustável, comparado com o limite teórico."></canvas>
+      <div class="controls">
+        <div class="ctrl">
+          <label for="lRange">Fator de amplificação L &nbsp;<span class="v" id="lVal">1,00</span></label>
+          <input type="range" id="lRange" min="80" max="115" value="100" step="1">
+        </div>
+        <div class="ctrl">
+          <label for="epsRange">Erro do modelo por passo ε &nbsp;<span class="v" id="epsVal">0,010</span></label>
+          <input type="range" id="epsRange" min="2" max="40" value="10" step="1">
+        </div>
+        <div class="ctrl">
+          <label for="kRange">Reancorar a cada <span class="v" id="kVal">nunca</span> passos</label>
+          <input type="range" id="kRange" min="2" max="26" value="26" step="1">
+        </div>
+      </div>
+      <div class="readout">
+        Regime: <b id="outReg">—</b> &nbsp;·&nbsp; pior erro no horizonte: <b id="outFinal">—</b> &nbsp;·&nbsp; limite da fórmula para esse trecho: <b id="outBound">—</b> &nbsp;·&nbsp; passos imaginados em sequência: <b id="outK">—</b>
+      </div>
+    </div>
+    <div class="print-only">
+      <svg viewBox="0 0 920 300" role="img" aria-label="Três painéis estáticos do erro acumulado em 50 passos, com erro por passo 0,01: para L igual a 0,9 o erro satura perto de 0,1; para L igual a 1 cresce linearmente até 0,5; para L igual a 1,1 explode até cerca de 12.">
+        <line x1="40" y1="250.0" x2="295" y2="250.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="40" y1="212.0" x2="295" y2="212.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="40" y1="174.0" x2="295" y2="174.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="40" y1="136.0" x2="295" y2="136.0" stroke="currentColor" stroke-width="1.3" opacity="0.4"/><line x1="40" y1="98.0" x2="295" y2="98.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="40" y1="60.0" x2="295" y2="60.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><text x="35" y="253.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,001</text><text x="35" y="215.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,01</text><text x="35" y="177.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,1</text><text x="35" y="139.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">1</text><text x="35" y="101.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">10</text><text x="35" y="63.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">100</text><polyline points="45.1,212.0 50.2,201.4 55.3,195.5 60.4,191.6 65.5,188.7 70.6,186.5 75.7,184.7 80.8,183.3 85.9,182.1 91.0,181.1 96.1,180.2 101.2,179.5 106.3,178.8 111.4,178.3 116.5,177.8 121.6,177.4 126.7,177.0 131.8,176.7 136.9,176.4 142.0,176.1 147.1,175.9 152.2,175.7 157.3,175.5 162.4,175.4 167.5,175.2 172.6,175.1 177.7,175.0 182.8,174.9 187.9,174.8 193.0,174.7 198.1,174.6 203.2,174.6 208.3,174.5 213.4,174.5 218.5,174.4 223.6,174.4 228.7,174.3 233.8,174.3 238.9,174.3 244.0,174.2 249.1,174.2 254.2,174.2 259.3,174.2 264.4,174.2 269.5,174.1 274.6,174.1 279.7,174.1 284.8,174.1 289.9,174.1 295.0,174.1" fill="none" stroke="var(--dream)" stroke-width="2.4"/><text x="40" y="34" font-family="var(--font-display)" font-size="13" font-weight="600" fill="currentColor">L = 0,9 · dissipativo: satura</text><text x="40" y="50" font-family="var(--font-mono)" font-size="10" fill="var(--dream)">erro no passo 50 ≈ 0,099</text><text x="40" y="268" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.55">t = 0</text><text x="295" y="268" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.55" text-anchor="end">t = 50</text><line x1="336" y1="250.0" x2="591" y2="250.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="336" y1="212.0" x2="591" y2="212.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="336" y1="174.0" x2="591" y2="174.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="336" y1="136.0" x2="591" y2="136.0" stroke="currentColor" stroke-width="1.3" opacity="0.4"/><line x1="336" y1="98.0" x2="591" y2="98.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="336" y1="60.0" x2="591" y2="60.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><text x="331" y="253.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,001</text><text x="331" y="215.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,01</text><text x="331" y="177.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,1</text><text x="331" y="139.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">1</text><text x="331" y="101.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">10</text><text x="331" y="63.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">100</text><polyline points="341.1,212.0 346.2,200.6 351.3,193.9 356.4,189.1 361.5,185.4 366.6,182.4 371.7,179.9 376.8,177.7 381.9,175.7 387.0,174.0 392.1,172.4 397.2,171.0 402.3,169.7 407.4,168.4 412.5,167.3 417.6,166.2 422.7,165.2 427.8,164.3 432.9,163.4 438.0,162.6 443.1,161.8 448.2,161.0 453.3,160.3 458.4,159.6 463.5,158.9 468.6,158.2 473.7,157.6 478.8,157.0 483.9,156.4 489.0,155.9 494.1,155.3 499.2,154.8 504.3,154.3 509.4,153.8 514.5,153.3 519.6,152.9 524.7,152.4 529.8,152.0 534.9,151.5 540.0,151.1 545.1,150.7 550.2,150.3 555.3,149.9 560.4,149.5 565.5,149.2 570.6,148.8 575.7,148.5 580.8,148.1 585.9,147.8 591.0,147.4" fill="none" stroke="var(--dream)" stroke-width="2.4"/><text x="336" y="34" font-family="var(--font-display)" font-size="13" font-weight="600" fill="currentColor">L = 1,0 · neutro: linear</text><text x="336" y="50" font-family="var(--font-mono)" font-size="10" fill="var(--dream)">erro no passo 50 ≈ 0,50</text><text x="336" y="268" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.55">t = 0</text><text x="591" y="268" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.55" text-anchor="end">t = 50</text><line x1="632" y1="250.0" x2="887" y2="250.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="632" y1="212.0" x2="887" y2="212.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="632" y1="174.0" x2="887" y2="174.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="632" y1="136.0" x2="887" y2="136.0" stroke="currentColor" stroke-width="1.3" opacity="0.4"/><line x1="632" y1="98.0" x2="887" y2="98.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><line x1="632" y1="60.0" x2="887" y2="60.0" stroke="currentColor" stroke-width="0.8" opacity="0.15"/><text x="627" y="253.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,001</text><text x="627" y="215.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,01</text><text x="627" y="177.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">0,1</text><text x="627" y="139.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">1</text><text x="627" y="101.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">10</text><text x="627" y="63.0" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.6" text-anchor="end">100</text><polyline points="637.1,212.0 642.2,199.8 647.3,192.2 652.4,186.7 657.5,182.1 662.6,178.3 667.7,174.9 672.8,171.8 677.9,169.0 683.0,166.3 688.1,163.8 693.2,161.5 698.3,159.2 703.4,157.0 708.5,154.9 713.6,152.9 718.7,150.9 723.8,149.0 728.9,147.1 734.0,145.2 739.1,143.4 744.2,141.6 749.3,139.8 754.4,138.0 759.5,136.3 764.6,134.6 769.7,132.8 774.8,131.1 779.9,129.5 785.0,127.8 790.1,126.1 795.2,124.5 800.3,122.8 805.4,121.2 810.5,119.5 815.6,117.9 820.7,116.3 825.8,114.7 830.9,113.1 836.0,111.5 841.1,109.8 846.2,108.2 851.3,106.6 856.4,105.0 861.5,103.4 866.6,101.9 871.7,100.3 876.8,98.7 881.9,97.1 887.0,95.5" fill="none" stroke="var(--dream)" stroke-width="2.4"/><text x="632" y="34" font-family="var(--font-display)" font-size="13" font-weight="600" fill="currentColor">L = 1,1 · instável: explode</text><text x="632" y="50" font-family="var(--font-mono)" font-size="10" fill="var(--dream)">erro no passo 50 ≈ 11,64</text><text x="632" y="268" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.55">t = 0</text><text x="887" y="268" font-family="var(--font-mono)" font-size="9" fill="currentColor" opacity="0.55" text-anchor="end">t = 50</text><text x="460" y="292" font-family="var(--font-mono)" font-size="10" fill="currentColor" opacity="0.6" text-anchor="middle">ε = 0,01 por passo nos três painéis · escala vertical logarítmica</text>
+      </svg>
+    </div>
+    <p class="caption">Escala vertical logarítmica — cada linha de grade é dez vezes a anterior. Com L = 1,1 o erro cruza a linha do 1 antes do passo 30; com L = 0,9 ele nunca passa de 0,1. Na versão interativa, deslize "reancorar" para a esquerda para ver a correção usada na prática: voltar a um estado real de tempos em tempos.</p>
+
+    <p>Dois fatos que o experimento torna óbvios e que a teoria confirma. Primeiro, com L &gt; 1 o erro cresce exponencialmente com o horizonte, e o desvio de distribuição realimenta — o modelo passa a prever a partir de estados que nunca viu. Segundo, <strong>rollouts curtos iniciados em estados reais</strong> domam o problema: reancorar a cada k passos recomeça a soma do zero, e o erro nunca passa de ε(L<sup>k</sup>−1)/(L−1). É precisamente a receita do MBPO <span class="mono">(arXiv:1906.08253)</span>. Você troca um sonho longo e fantasioso por muitos sonhos curtos e ancorados.</p>
+    <p>O que os teoremas do MBPO dizem, em uma linha e sem os símbolos: <em>retorno real ≥ retorno obtido no modelo − (um termo que cresce com o erro do modelo <strong>e</strong> com o comprimento k do rollout) − (um termo que cresce com o quanto a política mudou desde que os dados foram coletados)</em>. Os dois termos de desconto são o preço de sonhar; o k pequeno controla o primeiro. Para a versão exata, Teoremas 4.1 a 4.3 do artigo.</p>
+
+    <div class="flagbox">
+      <span class="tag">Onde isso vira oportunidade de pesquisa</span>
+      <p>Esses limites são rigorosos no RL baseado em modelo e <em>praticamente ausentes</em> nos world models generativos de vídeo, onde a deriva autoregressiva é tratada de forma empírica, por métricas de qualidade visual. Transportar limites no estilo MBPO para modelos de vídeo por difusão é um problema aberto, bem delimitado e que não exige escala de fronteira para ser formulado. O relatório detalha isso na seção de problemas abertos (§8, problema 6).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 09 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">09</span>
+    <h2>Quatro respostas para a mesma pergunta</h2>
+  </div>
+  <div class="col">
+    <p>Todas as escolas respondem "o que acontece se eu fizer isto?". Elas discordam sobre <strong>em que formato</strong> a resposta deve vir — e essa escolha de formato determina custo, capacidade e modo de falha.</p>
+
+    <div class="analogy">
+      <span class="tag">Analogia · quatro profissionais na mesma sala</span>
+      <p>Pergunte a quatro pessoas o que acontece se o carro acelerar. O <strong>cenógrafo</strong> pinta o quadro seguinte do filme inteiro, em detalhe fotográfico. O <strong>storyboardista</strong> rabisca o essencial em traços rápidos — dá para olhar o rabisco, mas ele é um efeito colateral, não o objetivo. O <strong>crítico</strong> não desenha nada e diz "vai dar colisão". O <strong>apostador</strong> ignora a cena e informa só a probabilidade de você ganhar. Nenhum está errado; servem a propósitos diferentes e custam valores muito diferentes.</p>
+    </div>
+
+    <div class="switcher" role="group" aria-label="Escolha a pergunta">
+      <button type="button" data-q="0" aria-pressed="true">O carro vai bater se eu acelerar?</button>
+      <button type="button" data-q="1">Como fica a cena em 3 segundos?</button>
+      <button type="button" data-q="2">Vale mais virar à esquerda ou à direita?</button>
+      <button type="button" data-q="3">E se eu empurrar a caneca para a borda?</button>
+    </div>
+
+    <div class="schools" id="schoolCards">
+      <div class="school">
+        <div class="role">O cenógrafo</div>
+        <div class="who">vídeo generativo · Genie, Cosmos, GameNGen</div>
+        <p class="ans" data-s="0"></p>
+      </div>
+      <div class="school">
+        <div class="role">O storyboardista</div>
+        <div class="who">dinâmica latente · Dreamer, PlaNet, TD-MPC2</div>
+        <p class="ans" data-s="1"></p>
+      </div>
+      <div class="school">
+        <div class="role">O crítico</div>
+        <div class="who">JEPA · I-JEPA, V-JEPA 2, LeWorldModel</div>
+        <p class="ans" data-s="2"></p>
+      </div>
+      <div class="school">
+        <div class="role">O apostador</div>
+        <div class="who">valor-equivalente · MuZero, EfficientZero</div>
+        <p class="ans" data-s="3"></p>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption class="caption" style="padding:0.8rem 0.85rem 0;text-align:left">As quatro escolas, comparadas nos eixos que importam para escolher uma</caption>
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Cenógrafo<br><span class="mono" style="font-weight:400;text-transform:none;letter-spacing:0">vídeo generativo</span></th>
+            <th scope="col">Storyboardista<br><span class="mono" style="font-weight:400;text-transform:none;letter-spacing:0">dinâmica latente</span></th>
+            <th scope="col">Crítico<br><span class="mono" style="font-weight:400;text-transform:none;letter-spacing:0">JEPA</span></th>
+            <th scope="col">Apostador<br><span class="mono" style="font-weight:400;text-transform:none;letter-spacing:0">valor-equivalente</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Prevê o quê</th>
+            <td>Pixels do quadro futuro</td>
+            <td>Latente futuro + recompensa, com decoder de pixels</td>
+            <td>Embedding futuro, sem decoder</td>
+            <td>Valor, política e recompensa; nada de observação</td>
+          </tr>
+          <tr>
+            <th scope="row">Treina com</th>
+            <td>Vídeo em massa, às vezes com ações</td>
+            <td>Interação do próprio agente</td>
+            <td>Vídeo passivo + pouca ação</td>
+            <td>Auto-jogo / interação</td>
+          </tr>
+          <tr>
+            <th scope="row">Escala típica</th>
+            <td class="num-cell">≈ 1 B – dezenas de B</td>
+            <td class="num-cell">1 M – 2 B params</td>
+            <td class="num-cell">15 M – 1,2 B params</td>
+            <td class="num-cell">dezenas de M</td>
+          </tr>
+          <tr>
+            <th scope="row">Ponto forte</th>
+            <td>Riqueza visual; gera dados sintéticos e cenários</td>
+            <td>Controle com pouquíssima amostra</td>
+            <td>Aproveita vídeo passivo; planejamento barato</td>
+            <td>Precisão de decisão onde há busca</td>
+          </tr>
+          <tr>
+            <th scope="row">Modo de falha</th>
+            <td>Bonito e fisicamente errado; deriva longa</td>
+            <td>Model exploitation; frágil fora da tarefa</td>
+            <td>Colapso; garantias caem fora da gaussianidade</td>
+            <td>Latente só serve para a tarefa treinada</td>
+          </tr>
+          <tr>
+            <th scope="row">Cabe num notebook?</th>
+            <td>Não. O Cosmos 2 B pede 26,02 GB de VRAM</td>
+            <td>Sim, nas versões pequenas e em ambientes simbólicos</td>
+            <td>Sim. LeWorldModel: 15 M params, 1 GPU, poucas horas</td>
+            <td>Parcialmente; a busca custa caro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Existem outras três escolas no relatório (§3) — modelos espaciais 3D persistentes, LLMs como world models implícitos, e híbridos com simuladores físicos diferenciáveis. As quatro acima são as que você precisa saber distinguir para ler qualquer abstract do campo.</p>
+    <p><strong>O apostador, com um exemplo.</strong> Dois modelos de xadrez. O primeiro prevê o tabuleiro seguinte corretamente. O segundo prevê um tabuleiro com peças em casas trocadas — errado como imagem — mas atribui a <em>mesma avaliação</em> a cada jogada que o primeiro. Para escolher a jogada, os dois são igualmente bons. <em>Value equivalence</em> é a aposta do MuZero de que só o segundo tipo de acerto importa: o modelo não precisa reproduzir o mundo, precisa reproduzir as <strong>consequências para a decisão</strong>. O preço aparece na última linha da tabela — fora da tarefa para a qual o valor foi definido, o modelo não sabe nada.</p>
+
+    <div class="analogy">
+      <span class="tag">O eixo de disputa, em uma frase</span>
+      <p>Reconstruir pixels é desperdiçar capacidade naquilo que a decisão não usa, ou é a única forma de garantir que o modelo não jogou fora algo essencial? Essa é a briga entre LeCun e a linha generativa, e, até outubro de 2026, nenhum benchmark neutro a resolveu.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 10 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">10</span>
+    <h2>O que conta como world model?</h2>
+  </div>
+  <div class="col">
+    <p>Para cada linha, decida você antes de ler a coluna da direita. A ambiguidade do termo é real e está documentada: há pelo menos quatro definições rivais em uso simultâneo na literatura de 2026.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Sistema</th><th scope="col">Prevê o futuro?</th><th scope="col">Aceita ação?</th><th scope="col">É world model?</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">GraphCast / GenCast (previsão do tempo)</th>
+            <td>Sim, com precisão notável</td>
+            <td>Não. Ninguém age sobre a atmosfera</td>
+            <td>Pela definição estrita, não — falta condicionamento em ação. Nenhum dos surveys consultados no relatório o cita</td>
+          </tr>
+          <tr>
+            <th scope="row">Recomendador da Netflix</th>
+            <td>Prevê sua escolha, não a dinâmica do mundo</td>
+            <td>Sim, implicitamente</td>
+            <td>Não. Prevê preferência, não consequência de ação no ambiente</td>
+          </tr>
+          <tr>
+            <th scope="row">Genie 3 (DeepMind)</th>
+            <td>Sim, gera o quadro seguinte</td>
+            <td>Sim, condicionado em ação do jogador</td>
+            <td>Sim pela definição generativa. Mas, até outubro de 2026, não há paper nem um único benchmark publicado — só blog post</td>
+          </tr>
+          <tr>
+            <th scope="row">Dreamer 4</th>
+            <td>Sim, em espaço latente</td>
+            <td>Sim</td>
+            <td>Sim, pela definição mais estrita de todas</td>
+          </tr>
+          <tr>
+            <th scope="row">Um LLM</th>
+            <td>Prevê o próximo token</td>
+            <td>Indiretamente</td>
+            <td>Contestado. É a quarta definição: "representação emergente". Veja o número abaixo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flagbox"><span class="tag">Onde isso vira oportunidade de pesquisa</span><p>Modelos de previsão do tempo preveem o futuro com precisão notável e não aceitam ação. Ninguém os trata como world models, e ninguém testou se a maquinaria de um deles, condicionada em ação, funcionaria como tal. É uma lacuna delimitada, com dados públicos, e que um doutorado pode atacar sem compute de fronteira.</p></div>
+    <p>A controvérsia dos LLMs tem o experimento mais instrutivo do campo. Vafa e colegas <span class="mono">(arXiv:2406.03689, NeurIPS 2024)</span> treinaram um transformer em trajetórias de táxi por Manhattan e mediram três coisas: acerto na tarefa de prever o próximo token, acurácia de um <em>probe linear</em> — um classificador simples treinado para ler o estado do mundo diretamente nas ativações internas — , e uma métrica de compressão que testa se o modelo recuperou de fato a estrutura do mundo.</p>
+
+    <div class="stat">
+      <div><div class="big">1,00</div><div class="cap">acerto na previsão do próximo token</div></div>
+      <div><div class="big">0,91</div><div class="cap">o probe linear <strong>encontra</strong> o estado nas ativações</div></div>
+      <div><div class="big">0,10</div><div class="cap">precisão de compressão: o world model coerente <strong>não</strong> está lá</div></div>
+    </div>
+
+    <p>A lição é geral e vale para qualquer avaliação que você vá desenhar: <strong>tarefa resolvida e probe positivo não implicam world model</strong>. O modelo pode ter memorizado um atalho local suficiente para a tarefa e para iludir um probe linear, sem nunca ter formado a estrutura global. No GPT-4, em quebra-cabeças lógicos, a mesma dupla de medidas deu 1,00 na tarefa e 0,21 na compressão. As duas primeiras medidas podem estar altas enquanto a terceira está baixa — e só a terceira testa se existe um mapa.</p>
+  </div>
+</section>
+
+<!-- ================= 11 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">11</span>
+    <h2>O teste de realidade</h2>
+  </div>
+  <div class="col">
+    <p>Esta é a seção que mais muda a forma de ler as manchetes. Cada número abaixo traz a fonte ao lado e diz se veio de avaliação independente ou do próprio laboratório.</p>
+
+    <div class="flagbox">
+      <span class="tag">O achado que mais sugere, e o que ele não prova</span>
+      <p>No Physics-IQ <span class="mono">(arXiv:2501.09038)</span>, realismo visual e compreensão física apareceram <strong>anticorrelacionados</strong>: <span class="mono">r = −0,46</span>. O modelo com o melhor realismo visual da amostra teve o pior desempenho em física, e o melhor modelo da avaliação ficou abaixo de 30 pontos num teto de 100.</p>
+      <p>Agora a leitura crítica, que é o exercício desta seção: esse <em>r</em> foi calculado sobre <strong>poucos modelos</strong>, e o próprio artigo reporta <span class="mono">p = 0,249</span>. Com esse p, o que se pode afirmar é a <strong>ausência de correlação positiva</strong> — parecer real não ajuda em física —, não a existência comprovada de uma anticorrelação. É um achado que <em>sugere</em>, não que reorganiza o campo. Saber dizer essa frase é o que separa uma revisão de literatura de um resumo de manchetes.</p>
+    </div>
+
+    <div class="analogy">
+      <span class="tag">Analogia · a redação linda com a conta errada</span>
+      <p>Um aluno escreve com vocabulário impecável, ritmo elegante, parágrafos bem construídos — e afirma que 7 × 8 = 54. A beleza da prosa não é evidência de competência aritmética; em certos casos é evidência de que ele treinou prosa e não aritmética. Vídeo que parece real é prosa bonita. Física correta é a conta.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption class="caption" style="padding:0.8rem 0.85rem 0;text-align:left">Onde os modelos de fronteira estão (números de outubro de 2026; envelhecem rápido)</caption>
+        <thead>
+          <tr><th scope="col">Avaliação</th><th scope="col">O que mede</th><th scope="col">Melhor modelo</th><th scope="col">Teto / humano</th><th scope="col">Independente?</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Physics-IQ <span class="mono">(2501.09038)</span></th><td>Física intuitiva em vídeo</td><td class="num-cell">&lt; 30</td><td class="num-cell">100</td><td>sim</td></tr>
+          <tr><th scope="row">IntPhys 2</th><td>Violações de física básica</td><td>nível do acaso</td><td class="num-cell">85–95 %</td><td>sim</td></tr>
+          <tr><th scope="row">AutumnBench</th><td>Inferir regras de um mundo novo</td><td>abaixo do humano em <em>todos</em> os ambientes</td><td class="num-cell">humano 0,935</td><td>sim</td></tr>
+          <tr><th scope="row">World Models' Last Exam</th><td>Compreensão de mundo, ampla</td><td class="num-cell">57,76</td><td class="num-cell">100</td><td>sim</td></tr>
+          <tr><th scope="row">Dreamer 4 · diamante no Minecraft <span class="mono">(2509.24527)</span></th><td>Tarefa longa, offline puro</td><td class="num-cell">0,7 % dos episódios</td><td>humano competente: rotina</td><td><strong>não</strong> — reportado pelos autores</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Repare no último. A manchete é "world model obtém diamante no Minecraft sem interagir com o jogo", o que é verdadeiro e tecnicamente notável — todos os baselines ficaram em 0,0%. O número é 0,7% dos episódios de 60 minutos, com 29% chegando à picareta de ferro. Isso demonstra <strong>viabilidade</strong>, não competência. Saber ler essa diferença é metade do trabalho de uma revisão de literatura honesta.</p>
+
+    <p>Dois outros resultados do mesmo tipo, úteis para calibrar expectativas. Em manipulação robótica, no WorldArena <span class="mono">(arXiv:2602.08971)</span>, o melhor world model usado como planejador de ações marcou 20 % / 21 %, contra 77 % / 66 % de uma política treinada diretamente (π0.5) no mesmo benchmark — um fator de 3 a 4. E num estudo de reprodutibilidade <span class="mono">(arXiv:2602.08968)</span><span class="badge s">conferir no preprint</span>, o DINO-WM reproduzido entrega 94,0 % quando avaliado a partir de estados de demonstrações de especialista e cai para <strong>12,0 %</strong> a partir de estados de uma política aleatória — a mesma arquitetura, o mesmo ambiente, outra distribuição de dados iniciais.</p>
+    <p>Uma nota sobre as métricas que você vai encontrar nos papers de vídeo: <strong>FVD</strong>, <strong>PSNR</strong> e <strong>SSIM</strong> medem semelhança visual entre o gerado e o real — distribuição de aparência, ruído por pixel, estrutura local. Nenhuma delas pergunta se a bola caiu para o lado certo. É por isso que um modelo pode ter FVD excelente e Physics-IQ péssimo, e por isso que o <em>retorno obtido no ambiente</em> e a <em>taxa de sucesso na tarefa</em> continuam sendo as únicas métricas que medem o que um world model é para.</p>
+    <div class="notebox"><span class="tag">Seis perguntas para fazer a qualquer resultado de world model</span>
+      <ol class="plain" style="padding-left:1.2rem;margin:0">
+        <li>A avaliação é no ambiente real, ou dentro do próprio modelo? <span class="mono">(2086 vs 193)</span></li>
+        <li>Os estados de teste vêm da mesma política que gerou os dados de treino? <span class="mono">(94 % → 12 %)</span></li>
+        <li>Qual é o horizonte H, e o erro é reportado por passo ou no fim?</li>
+        <li>Há comparação com uma política direta, sem modelo, de mesmo orçamento? <span class="mono">(20 % vs 77 %)</span></li>
+        <li>"Resolve a tarefa" quer dizer que fração dos episódios? <span class="mono">(0,7 %)</span></li>
+        <li>A métrica mede aparência ou física? <span class="mono">(r = −0,46, p = 0,249)</span></li>
+      </ol></div>
+
+    <div class="flagbox">
+      <span class="tag">Por que isso é bom para você</span>
+      <p>Um campo com bilhões investidos, resultados de avaliação ruins e <em>nenhum</em> benchmark comum entre escolas é um campo com problemas abertos acessíveis. Até outubro de 2026, e até onde o relatório conseguiu buscar, não existe comparação cara a cara entre RL baseado em modelo, vídeo generativo e JEPA num mesmo teste — e essa ausência é um achado citável, não uma lacuna da sua busca.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 12 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">12</span>
+    <h2>Glossário por analogia</h2>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th scope="col">Termo</th><th scope="col">Em inglês, nos papers</th><th scope="col">Em uma frase</th><th scope="col">Analogia (a mesma do texto)</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Latente (z)</th><td class="num-cell">latent, latent state</td><td>Resumo comprimido da observação</td><td>A narração de rádio do jogo</td></tr>
+        <tr><th scope="row">Belief state</th><td class="num-cell">belief state</td><td>Distribuição sobre estados ocultos possíveis</td><td>As hipóteses pesadas do detetive</td></tr>
+        <tr><th scope="row">Rollout</th><td class="num-cell">rollout, imagined trajectory</td><td>Encadear previsões, usando a saída como entrada</td><td>Contar a história de olhos fechados, um passo de cada vez</td></tr>
+        <tr><th scope="row">Horizonte (H)</th><td class="num-cell">horizon</td><td>Quantos passos à frente você imagina sem olhar o mundo</td><td>Até onde a vista alcança na neblina</td></tr>
+        <tr><th scope="row">Imagination / dreaming</th><td class="num-cell">imagination, dreaming, latent imagination</td><td>Treinar a política dentro do modelo</td><td>Treinar no simulador em vez de no avião</td></tr>
+        <tr><th scope="row">Model exploitation</th><td class="num-cell">model exploitation</td><td>A política acha e explora o bug do simulador</td><td>Estudar pelo simulado que você mesmo escreveu</td></tr>
+        <tr><th scope="row">Erro composto</th><td class="num-cell">compounding error, error accumulation</td><td>Erro por passo que o sistema amplifica a cada passo seguinte, quando L &gt; 1</td><td>Fotocópia de fotocópia</td></tr>
+        <tr><th scope="row">Colapso (JEPA)</th><td class="num-cell">representation collapse</td><td>Prever sempre o mesmo vetor zera a perda</td><td>Responder "42" a toda questão</td></tr>
+        <tr><th scope="row">RSSM</th><td class="num-cell">recurrent state-space model</td><td>Estado com parte determinística e parte estocástica</td><td>Trem com trilho e sorteio</td></tr>
+        <tr><th scope="row">Value equivalence</th><td class="num-cell">value equivalence</td><td>O modelo só precisa acertar valores, não observações</td><td>O apostador que ignora a cena</td></tr>
+        <tr><th scope="row">Dream-to-real gap</th><td class="num-cell">dream-to-real gap, model bias</td><td>Diferença entre desempenho dentro do modelo aprendido e no ambiente</td><td>2086 no sonho, 193 na pista</td></tr>
+        <tr><th scope="row">Sim2real gap</th><td class="num-cell">sim-to-real gap</td><td>Diferença entre um simulador <em>programado</em> (MuJoCo, Isaac) e o robô físico — parente do anterior, outra origem</td><td>O carro de autoescola que não é o seu carro</td></tr>
+        <tr><th scope="row">Action-conditioning</th><td class="num-cell">action-conditioned prediction</td><td>A previsão depende da ação escolhida</td><td>O que separa um world model de uma previsão do tempo</td></tr>
+        <tr><th scope="row">Planejar</th><td class="num-cell">planning, MPC, CEM, MCTS</td><td>Usar o modelo na hora de decidir, buscando a melhor sequência de ações</td><td>Jogar mentalmente várias partidas antes de mover a peça</td></tr>
+        <tr><th scope="row">Política</th><td class="num-cell">policy, π(a | s)</td><td>A função que escolhe a ação a partir do estado</td><td>O músculo que aperta o botão (o C)</td></tr>
+        <tr><th scope="row">Recompensa / valor</th><td class="num-cell">reward / value, return</td><td>O ponto de agora / a soma esperada dos pontos futuros</td><td>O gol / o placar final previsto</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 13 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">13</span>
+    <h2>Por onde começar com as mãos</h2>
+  </div>
+  <div class="col">
+    <p>A máquina de referência deste guia é um notebook com 18 GB de RAM e sem GPU dedicada — a do autor. A heurística que resolve a questão não é contagem de parâmetros. É esta pergunta: <strong>há uma CNN processando pixels dentro do laço de treino?</strong> Se há, o notebook vai sofrer. Se não há, muita coisa roda. Quem tiver uma GPU de 8–12 GB sobe um degrau na tabela; quem tiver 24 GB ou mais, dois.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Caminho</th><th scope="col">Veredicto em 18 GB de RAM, sem GPU (outubro de 2026)</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Craftax-Symbolic + Dreamer pequeno</th><td>Viável. JAX instala em CPU por padrão e o ambiente é ~250× mais rápido que o Crafter <span class="mono">(citado no paper do Craftax)</span>. O caminho honesto para treinar localmente</td></tr>
+          <tr><th scope="row">VAE + MDN-RNN minúsculo, estilo 2018</th><td>Viável como exercício. Reimplementar as três peças ensina mais que ler dez papers</td></tr>
+          <tr><th scope="row">LeWorldModel / stable-worldmodel</th><td>Viável. 15 M params, uma GPU, poucas horas. O <span class="mono">stable-worldmodel</span> é MIT, está no PyPI, e traz 16 ambientes com fatores de variação controláveis</td></tr>
+          <tr><th scope="row">DreamerV3 sobre pixels</th><td>Não localmente. Referência de custo: Atari 100k levou 14 h numa RTX 3080; Crafter 1 M levou 1 d 3 h numa V100</td></tr>
+          <tr><th scope="row">NVIDIA Cosmos, qualquer variante</th><td>Impossível. O menor modelo com número publicado (2 B, Text2Image) pede 26,02 GB só de VRAM — mais que a RAM total da máquina <span class="mono">(README do cosmos-predict2)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Uma armadilha concreta que custa tempo: o repositório PyTorch mais citado da linha Dreamer (<span class="mono">NM512/dreamerv3-torch</span>) está autodeclarado obsoleto e redireciona para um sucessor — confira antes de clonar. O relatório traz a escada completa de sete experimentos (§7), com estimativas de wall-clock marcadas como citadas ou estimadas.</p>
+    <div class="notebox"><span class="tag">Mini-projeto para uma tarde · uma vitória antes da escada</span>
+      <p>Treine um VAE com latente de 32 dimensões em 10 mil quadros de CarRacing (Gymnasium/Box2D, política aleatória para coletar). Depois pegue dois quadros, codifique os dois em z, e decodifique os pontos no segmento entre eles. Se a interpolação no latente produzir pistas que curvam suavemente de uma para a outra, você acabou de ver o que "espaço latente" significa — e já tem a peça V da seção 03. Roda em CPU em menos de uma hora.</p></div>
+    <div class="tablewrap">
+      <table>
+        <caption class="caption" style="padding:0.8rem 0.85rem 0;text-align:left">Roteiro de leitura dos papers, em ordem — e o que pular na primeira passada</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Paper</th><th scope="col">Por que este, agora</th><th scope="col">Leia / pule</th><th scope="col">Tempo</th></tr></thead>
+        <tbody>
+          <tr><td class="num-cell">1</td><td>Ha &amp; Schmidhuber 2018 <span class="mono">(1803.10122)</span> — a versão web interativa em worldmodels.github.io</td><td>Tudo o que a seção 03 descreve, com animações</td><td>Inteiro; é curto</td><td class="num-cell">2 h</td></tr>
+          <tr><td class="num-cell">2</td><td>PlaNet <span class="mono">(1811.04551)</span></td><td>O RSSM e o ELBO da seção 05, na fonte; e o planejamento por CEM da seção 07</td><td>Seções 2 e 3; pule os apêndices</td><td class="num-cell">2 h</td></tr>
+          <tr><td class="num-cell">3</td><td>Dreamer <span class="mono">(1912.01603)</span></td><td>O laço "sonhar" formalizado, com gradiente através do modelo</td><td>Seções 2 a 4</td><td class="num-cell">2 h</td></tr>
+          <tr><td class="num-cell">4</td><td>MBPO <span class="mono">(1906.08253)</span></td><td>O argumento dos rollouts curtos, com teorema</td><td>Introdução e Teorema 4.1; pule as provas</td><td class="num-cell">1,5 h</td></tr>
+          <tr><td class="num-cell">5</td><td>Vafa et al. <span class="mono">(2406.03689)</span></td><td>Como testar se existe um world model de verdade</td><td>Seções 1 a 4</td><td class="num-cell">1,5 h</td></tr>
+          <tr><td class="num-cell">6</td><td>V-JEPA 2 <span class="mono">(2506.09985)</span></td><td>A escola do crítico em ação, com planejamento</td><td>Introdução e a seção de planejamento (V-JEPA 2-AC)</td><td class="num-cell">2 h</td></tr>
+          <tr><td class="num-cell">7</td><td>DreamerV3 <span class="mono">(2301.04104)</span></td><td>O que faz a receita funcionar em muitos domínios</td><td>Só a seção de truques de robustez</td><td class="num-cell">1 h</td></tr>
+          <tr><td class="num-cell">8</td><td>Sutton &amp; Barto, <em>Reinforcement Learning</em>, cap. 8</td><td>"Planning and Learning with Tabular Methods": o Dyna, e a ponte entre RL e world models</td><td>8.1 a 8.3</td><td class="num-cell">2 h</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Genie, Cosmos e GameNGen ficam para a segunda rodada: são impressionantes e difíceis de reproduzir, e quem tem pouco compute vai trabalhar nas escolas 2 e 3 do roteiro.</p>
+  </div>
+</section>
+
+<!-- ================= 14 ================= -->
+<section>
+  <div class="sechead col">
+    <span class="num">14</span>
+    <h2>Para checar se entendeu</h2>
+  </div>
+  <div class="col">
+    <p>Duas perguntas por bloco. Responda antes de abrir; a resposta está dentro.</p>
+
+    <details class="check"><summary>Se C recebesse só z<sub>t</sub>, e não [z<sub>t</sub>, h<sub>t</sub>], quantos parâmetros teria? <span class="mono">(seção 03)</span></summary>
+      <div class="a"><p>32 entradas × 3 saídas + 3 vieses = <strong>99</strong>. O artigo testou exatamente isso: a ablação "só z" pontua 632 ± 251 contra 906 ± 21 do modelo completo. A memória h vale quase 300 pontos.</p></div></details>
+
+    <details class="check"><summary>Por que a seta tracejada do diagrama — a ação voltando como entrada — é o que separa um simulador de um classificador? <span class="mono">(seção 03)</span></summary>
+      <div class="a"><p>Sem ela, M responde "o que vem a seguir?" uma vez e para: é um classificador de próximo quadro. Com ela, a saída de M vira a entrada do próximo passo, e a pergunta pode ser encadeada quantas vezes se queira — isso é um rollout, e é isso que um simulador faz. É também por onde o erro composto entra.</p></div></details>
+
+    <details class="check"><summary>Se você removesse o termo KL e treinasse só com reconstrução, o que o latente viraria, e por que isso impediria o modelo de prever o futuro? <span class="mono">(seção 05)</span></summary>
+      <div class="a"><p>Um compactador estático excelente: z guardaria tudo o que ajuda a redesenhar a imagem de <em>agora</em>. Mas o prior p(s<sub>t</sub> | s<sub>t−1</sub>, a<sub>t−1</sub>) nunca seria cobrado por acertar z, então nunca aprenderia a dinâmica. Sem prior treinado, não há como imaginar o passo seguinte sem olhar.</p></div></details>
+
+    <details class="check"><summary>Por que reduzir τ fez o agente do VizDoom ir melhor no sonho e pior no jogo? <span class="mono">(seção 06)</span></summary>
+      <div class="a"><p>Com τ baixo o sonho é quase determinístico, e um simulador determinístico imperfeito tem bugs reproduzíveis — a política os encontra e mora neles (2086 pontos). No jogo real os bugs não existem, e a política treinada para explorá-los não sabe fazer mais nada (193, pior que o aleatório). Ruído no sonho impede a política de confiar em detalhes que o modelo inventou.</p></div></details>
+
+    <details class="check"><summary>Um colega propõe avaliar um world model pelo retorno obtido dentro do próprio modelo. Que número você cita? <span class="mono">(seções 06 e 11)</span></summary>
+      <div class="a"><p>2086 no sonho contra 193 no jogo real, com a política aleatória em 210. O retorno interno não só não prevê o externo — nesse caso ele está anticorrelacionado com ele.</p></div></details>
+
+    <details class="check"><summary>Com ε = 0,02 por passo e L = 1,05, qual é o erro no fim de 30 passos? E se você reancorar a cada 10? <span class="mono">(seção 08)</span></summary>
+      <div class="a"><p>Sem reancorar: 0,02 × (1,05<sup>30</sup> − 1) / 0,05 = 0,02 × 66,4 ≈ <strong>1,33</strong>. Reancorando a cada 10: o erro nunca passa de 0,02 × (1,05<sup>10</sup> − 1) / 0,05 = 0,02 × 12,6 ≈ <strong>0,25</strong>. Mesmo modelo, cinco vezes menos erro — é o MBPO em números.</p></div></details>
+
+    <details class="check"><summary>Classifique: um modelo que recebe vídeo e ação e devolve o embedding do próximo quadro, sem decoder. Que escola? Qual o modo de falha típico? <span class="mono">(seção 09)</span></summary>
+      <div class="a"><p>O crítico — JEPA. Sem decoder, nada o impede de mapear tudo para o mesmo embedding e zerar a perda: o modo de falha é o <strong>colapso</strong>, e a defesa é regularizar variância e covariância (VICReg) ou usar um professor com médias móveis.</p></div></details>
+
+    <details class="check"><summary>Um modelo de previsão de vendas que aceita "preço" como entrada é um world model pela definição estrita? <span class="mono">(seção 10)</span></summary>
+      <div class="a"><p>Discutível, e o exercício é ver por quê. Ele é condicionado numa variável que você controla (o preço é uma ação) e prevê uma consequência (vendas) — isso satisfaz "prevê o futuro condicionado em ação". O que falta é a <em>dinâmica</em>: ele prevê um número, não o próximo estado do mundo a partir do qual se possa prever de novo. Não há rollout possível. A definição estrita pede um modelo que se encadeie.</p></div></details>
+
+    <details class="check"><summary>Um paper reporta que o modelo "obtém diamante no Minecraft". Que duas perguntas você faz antes de se impressionar? <span class="mono">(seção 11)</span></summary>
+      <div class="a"><p>Em que fração dos episódios (0,7 %), e quem avaliou (os próprios autores, nesse caso). As duas respostas não tiram o mérito técnico — todos os baselines ficaram em 0,0 % — mas trocam "competência" por "viabilidade", que é a palavra certa.</p></div></details>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Como usar este guia.</strong> Três blocos. <strong>00 a 07</strong> constroem a intuição e a mecânica: notação, a ideia, o estado oculto, as três peças, o latente, a perda, sonhar e planejar. <strong>08 a 11</strong> ensinam a avaliar criticamente o que você lê: erro composto, as escolas, o que conta como world model, e o teste de realidade. <strong>12 a 14</strong> são consulta e prática: glossário, mãos à obra, e as perguntas de checagem. Depois volte ao relatório completo, que traz as equações verificadas uma a uma, as sete escolas, os catorze problemas abertos etiquetados por viabilidade de compute, e o contexto de fomento brasileiro.</p>
+  <p><strong>Marcas de verificação.</strong> <span class="badge v">conferido</span> = número lido na fonte primária durante esta revisão. <span class="badge s">fonte secundária</span> = número que chegou por um intermediário; confira antes de citar numa submissão.</p>
+  <p><strong>Fontes citadas, em ordem de aparição.</strong></p>
+  <ol class="src">
+    <li>Ha &amp; Schmidhuber, <em>World Models</em> (2018) — <span class="mono">arXiv:1803.10122</span>; versão web em worldmodels.github.io. Tabela 2 e contagem de parâmetros conferidas nesta revisão.</li>
+    <li>Assran et al., <em>V-JEPA 2</em> (2025) — <span class="mono">arXiv:2506.09985</span>. Pós-treino do V-JEPA 2-AC com menos de 62 h de vídeo de robô (DROID).</li>
+    <li>CAICT, via Gasgoo Autonews (2026) — estimativa da lacuna de dados. Fonte secundária.</li>
+    <li>Craik, <em>The Nature of Explanation</em> (1943); Schmidhuber, <em>Making the World Differentiable</em> (1990); Sutton, <em>Dyna</em> (1990).</li>
+    <li>Kaelbling, Littman &amp; Cassandra, <em>Planning and acting in partially observable stochastic domains</em> (1998).</li>
+    <li>Bardes et al., <em>VICReg</em> (2021) — <span class="mono">arXiv:2105.04906</span>.</li>
+    <li>Hafner et al., <em>PlaNet</em> (2018) — <span class="mono">arXiv:1811.04551</span>, Eq. 3 (ELBO sequencial) e planejamento por CEM.</li>
+    <li>Hafner et al., <em>Dreamer</em> (2019) — <span class="mono">arXiv:1912.01603</span>; <em>DreamerV2</em> (2020) — <span class="mono">arXiv:2010.02193</span>; <em>DreamerV3</em> (2023) — <span class="mono">arXiv:2301.04104</span>; <em>Dreamer 4</em> (2025) — <span class="mono">arXiv:2509.24527</span>.</li>
+    <li>Janner et al., <em>MBPO</em> (2019) — <span class="mono">arXiv:1906.08253</span>, Teoremas 4.1–4.3.</li>
+    <li>Vafa et al., <em>Evaluating the World Model Implicit in a Generative Model</em> (NeurIPS 2024) — <span class="mono">arXiv:2406.03689</span>.</li>
+    <li>Motamed et al., <em>Physics-IQ</em> (2025) — <span class="mono">arXiv:2501.09038</span>; r = −0,46 com p = 0,249.</li>
+    <li>WorldArena (2026) — <span class="mono">arXiv:2602.08971</span>; world model como planejador (WoW) vs. política direta (π0.5).</li>
+    <li>Reprodução do DINO-WM sob mudança de distribuição de estados iniciais (2026) — <span class="mono">arXiv:2602.08968</span>. Fonte secundária para o par 94,0 % → 12,0 %.</li>
+    <li>Maes et al., <em>LeWorldModel</em> (2026) — <span class="mono">arXiv:2603.19312</span>; <em>stable-worldmodel</em> (2026) — <span class="mono">arXiv:2605.21800</span>.</li>
+    <li>NVIDIA, <em>Cosmos</em> (2025) — <span class="mono">arXiv:2501.03575</span> e README do cosmos-predict2 (VRAM); Valevski et al., <em>GameNGen</em> (2024) — <span class="mono">arXiv:2408.14837</span>; Bruce et al., <em>Genie</em> (2024) — <span class="mono">arXiv:2402.15391</span>.</li>
+    <li>Matthews et al., <em>Craftax</em> (2024) — fator de ~250× sobre o Crafter.</li>
+  </ol>
+  <p>Dois avisos que valem repetir: o número exato do melhor modelo no Physics-IQ difere entre as fontes consultadas, e o coeficiente <span class="mono">r = −0,46</span> veio com <span class="mono">p = 0,249</span>; os números de fragilidade do DINO-WM vieram de uma fonte secundária. Identificadores de arXiv de 2026 devem ser conferidos antes de uma submissão.</p>
+</footer>
+
+</div>
+
+<script>
+/* ---------- comparador de escolas ---------- */
+(function(){
+  var answers = [
+    [
+      "Pinta os próximos 24 quadros do acidente, com reflexo no para-brisa e deformação da lataria. Linda, e possivelmente com a gravidade errada.",
+      "Diz que o latente vai para a região onde a recompensa é muito negativa, em 11 passos. Não desenha nada que você possa olhar.",
+      "Informa que o embedding futuro cai longe do embedding de qualquer estado seguro. Não diz como a batida se parece.",
+      "Devolve um número: o valor de acelerar agora é −8,4, contra 0,3 de frear. Não sabe o que é uma batida."
+    ],
+    [
+      "Essa é a pergunta nativa dele, e é onde ele ganha de todos. Quadros em 720p, condicionados na sua ação.",
+      "Pode reconstruir uma versão da cena via decoder, mas com qualidade baixa — pixels nunca foram o objetivo.",
+      "Recusa a pergunta por construção. Não tem decoder: prevê a consequência abstrata, não a aparência.",
+      "Recusa a pergunta. Nunca modelou observação alguma; a cena não existe para ele."
+    ],
+    [
+      "Gera as duas cenas e deixa você julgar qual parece melhor. Caro, e não responde direto.",
+      "Imagina as duas trajetórias no latente, soma recompensas descontadas, compara. É o uso para o qual foi desenhado.",
+      "Planeja no espaço de embeddings e devolve a ação, muito rápido — o LeWorldModel reporta planejamento até 48× mais rápido.",
+      "Essa é a pergunta nativa dele. Busca em árvore nas duas ramificações e devolve o valor de cada uma."
+    ],
+    [
+      "Mostra a caneca caindo e quebrando. Mas é aqui que a crise de avaliação mora: pode mostrar a caneca flutuando, ou a cena congelando para evitar errar a física.",
+      "Prevê a mudança de latente e a recompensa associada, se quebrar caneca estiver no sinal de recompensa que você definiu.",
+      "Prevê que o estado futuro é incompatível com 'caneca na mesa'. Abstrato, e suficiente para evitar a ação.",
+      "Só sabe responder se quebrar a caneca mudar o placar da tarefa. Fora isso, é cego ao evento."
+    ]
+  ];
+  var cards = document.querySelectorAll('#schoolCards .ans');
+  var btns = document.querySelectorAll('.switcher button');
+  function render(q){
+    for(var i=0;i<cards.length;i++){ cards[i].textContent = answers[q][i]; }
+    for(var j=0;j<btns.length;j++){
+      btns[j].setAttribute('aria-pressed', String(Number(btns[j].getAttribute('data-q'))===q));
+    }
+  }
+  for(var k=0;k<btns.length;k++){
+    btns[k].addEventListener('click', function(e){
+      render(Number(e.currentTarget.getAttribute('data-q')));
+    });
+  }
+  render(0);
+})();
+
+/* ---------- laboratório de erro composto: e_{t+1} = L·e_t + ε ---------- */
+(function(){
+  var cv = document.getElementById('rolloutCanvas');
+  if(!cv) return;
+  var ctx = cv.getContext('2d');
+  var lR = document.getElementById('lRange'), epsR = document.getElementById('epsRange'), kR = document.getElementById('kRange');
+  var lV = document.getElementById('lVal'), epsV = document.getElementById('epsVal'), kV = document.getElementById('kVal');
+  var oReg = document.getElementById('outReg'), oF = document.getElementById('outFinal'), oB = document.getElementById('outBound'), oK = document.getElementById('outK');
+  var H = 50, YMIN = 1e-3, YMAX = 1e2;
+
+  function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+  function bound(eps, L, t){ return Math.abs(L-1) < 1e-9 ? eps*t : eps*(Math.pow(L,t)-1)/(L-1); }
+
+  function simulate(L, eps, k){
+    var rnd = mulberry32(20261025);
+    var e = 0, err = [0], resets = [];
+    for(var t=1;t<=H;t++){
+      if(k < H && t % k === 0){ e = 0; resets.push(t); }
+      e = L*e + eps*(0.85 + 0.15*rnd());   // magnitude entre 0,85ε e ε: nunca passa do limite
+      err.push(Math.abs(e));
+    }
+    return {err:err, resets:resets};
+  }
+
+  function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#888'; }
+
+  function draw(){
+    var L = Number(lR.value)/100, eps = Number(epsR.value)/1000, kRaw = Number(kR.value);
+    var k = kRaw >= 26 ? H : kRaw;
+    var sim = simulate(L, eps, k);
+    var W = cv.width, Hc = cv.height, padL = 60, padR = 16, padT = 14, padB = 30;
+    var pw = W-padL-padR, ph = Hc-padT-padB;
+    var ink = css('--ink'), real = css('--real'), dream = css('--dream');
+    function X(i){ return padL + (i/H)*pw; }
+    function Y(v){ var lv = Math.log10(Math.max(YMIN, Math.min(YMAX, v))); return padT + ph - (lv - Math.log10(YMIN))/(Math.log10(YMAX)-Math.log10(YMIN))*ph; }
+    ctx.clearRect(0,0,W,Hc);
+    ctx.font = '11px ui-monospace, monospace';
+    var ticks = [1e-3,1e-2,1e-1,1,10,100], lab = ['0,001','0,01','0,1','1','10','100'];
+    for(var g=0; g<ticks.length; g++){
+      var yy = Y(ticks[g]);
+      ctx.strokeStyle = ink; ctx.globalAlpha = ticks[g]===1 ? 0.35 : 0.13; ctx.lineWidth = ticks[g]===1 ? 1.4 : 1;
+      ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W-padR, yy); ctx.stroke();
+      ctx.globalAlpha = 0.6; ctx.fillStyle = ink; ctx.textAlign = 'right'; ctx.fillText(lab[g], padL-8, yy+4);
+    }
+    ctx.globalAlpha = 0.6; ctx.textAlign = 'left'; ctx.fillText('t = 0', padL, Hc-10);
+    ctx.textAlign = 'right'; ctx.fillText('t = '+H, W-padR, Hc-10);
+    ctx.textAlign = 'center'; ctx.fillText('erro |e_t|  (escala log)', padL + pw/2, Hc-10);
+    ctx.globalAlpha = 1;
+    if(sim.resets.length){
+      ctx.strokeStyle = ink; ctx.globalAlpha = 0.3; ctx.lineWidth = 1; ctx.setLineDash([2,4]);
+      for(var r=0;r<sim.resets.length;r++){ var rx = X(sim.resets[r]); ctx.beginPath(); ctx.moveTo(rx,padT); ctx.lineTo(rx,padT+ph); ctx.stroke(); }
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+    }
+    // limite teórico (reiniciando junto com a reancoragem)
+    ctx.beginPath(); ctx.strokeStyle = real; ctx.lineWidth = 2; ctx.setLineDash([6,4]);
+    var since = 0, started = false;
+    for(var t=0;t<=H;t++){
+      if(k < H && t>0 && t % k === 0) since = 0;
+      var bv = bound(eps, L, since); since++;
+      if(bv < YMIN){ started = false; continue; }
+      var px = X(t), py = Y(bv);
+      if(!started){ ctx.moveTo(px,py); started = true; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    // erro simulado
+    ctx.beginPath(); ctx.strokeStyle = dream; ctx.lineWidth = 2.4; started = false;
+    for(var u=0;u<=H;u++){
+      var ev = sim.err[u]; if(ev < YMIN){ started = false; continue; }
+      var qx = X(u), qy = Y(ev);
+      if(!started){ ctx.moveTo(qx,qy); started = true; } else ctx.lineTo(qx,qy);
+    }
+    ctx.stroke();
+    // marcador do passo 50
+    ctx.fillStyle = dream; ctx.beginPath(); ctx.arc(X(H), Y(Math.max(YMIN,sim.err[H])), 4, 0, 6.2832); ctx.fill();
+    // leitura
+    var fin = 0; for(var m=0;m<=H;m++){ if(sim.err[m]>fin) fin = sim.err[m]; }
+    var bfin = bound(eps, L, k < H ? k : H);
+    var reg = L < 0.995 ? 'dissipativo — o erro satura perto de ε/(1−L) = ' + (eps/(1-L)).toFixed(3).replace('.', ',')
+            : L > 1.005 ? 'instável — o erro cresce exponencialmente' : 'neutro — o erro cresce linearmente, ε por passo';
+    lV.textContent = L.toFixed(2).replace('.', ',');
+    epsV.textContent = eps.toFixed(3).replace('.', ',');
+    kV.textContent = k >= H ? 'nunca' : String(k);
+    oReg.textContent = reg;
+    oF.textContent = fin.toFixed(fin < 1 ? 3 : 2).replace('.', ',');
+    oB.textContent = bfin.toFixed(bfin < 1 ? 3 : 2).replace('.', ',');
+    oK.textContent = k >= H ? String(H) : String(k);
+  }
+  lR.addEventListener('input', draw); epsR.addEventListener('input', draw); kR.addEventListener('input', draw);
+  if(window.matchMedia){ var mq = window.matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener ? mq.addEventListener('change', draw) : mq.addListener(draw); }
+  draw();
+})();
+</script>
+
+</body></html>
